@@ -20,10 +20,13 @@ Les tables nécessaires pour cette API sont décrites dans la documentation à l
     npm install
     ```
 
-3. **Lancer votre base de données** :
+3. **Configurer les variables d'environnement** :
+    Ajouter un fichier .env
+
+4. **Lancer votre base de données** :
     - Assurez-vous que votre serveur MySQL est en cours d'exécution et que la base de données est configurée correctement.
 
-4. **Démarrer le serveur** :
+5. **Démarrer le serveur** :
     ```sh
     npm start
     ```
