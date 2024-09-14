@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const TableController = require('../controller/TableController');
+const TableController = require('./TableController');
 
 router.get("/", (req, res) => {
   TableController.getAllTests(req.connexion, (err, rows) => {
