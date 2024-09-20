@@ -15,8 +15,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/users", require("./api/user/users"));
-app.use("/table", require("./api/table/table"));
+app.use("/users", require("./api/users/users"));
 
 app.listen(port, () => {
   console.log(`Server est en ligne ${port}`);
