@@ -13,11 +13,6 @@ const GetAccompagnateurByNum = (connexion, { num }, callback) => {
     connexion.query(query, [num], callback);
 }
 
-const AddClient = (connexion, {}, callback) => {
-    const query = 'INSERT INTO client (name, surname, num, mail, handicap, birth, password, contact_mail, contact_num, note) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    connexion.query(query, [], callback);
-}
-
 const AddAccompagnateur = (connexion, { name_acc, surname_acc, num_acc, mail_acc }, callback) => {
     const query = `
         INSERT INTO Accompagnateur (name_acc, surname_acc, num_acc, mail_acc)
@@ -31,5 +26,6 @@ const AddAccompagnateur = (connexion, { name_acc, surname_acc, num_acc, mail_acc
 module.exports = {
     GetAccompagnateurById,
     GetAccompagnateurByMail,
-    GetAccompagnateurByNum
+    GetAccompagnateurByNum,
+    AddAccompagnateur
 };

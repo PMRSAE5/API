@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const UsersController = require('./accompagnateurController');
+const { AddAccompagnateur } = require('./accompagnateurController');
 
 router.get("/", (req, res) => {
     res.status(200).json({message: "Accompagnateur" });
@@ -36,6 +37,17 @@ router.get("/accNum/:num", (req, res) => {
             return;
         }
         res.status(200).json(rows);
+    });
+});
+
+router.post("/accAdd", (req, res) => {
+    const { name_acc, surname_acc, num_acc, mail_acc } = req.body;
+    AddAccompagnateur(req.connexion, { name_acc, surname_acc, num_acc, mail_acc }, (err, result) => {
+        if (err) {
+            res.status(500).json({ error: 'Erreur lors de l\'insertion des données' });
+            return;
+        }
+        res.status(201).json({ message: 'Accompagnateur ajouté avec succès', id: result.insertId });
     });
 });
 
