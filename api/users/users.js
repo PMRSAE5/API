@@ -30,8 +30,8 @@ router.get("/userMail/:mail", (req, res) => {
 });
 
 router.post("/userAdd", (req, res) => {
-    const { name, surname, num, mail, handicap, birth, password, contact_mail, contact_num, note } = req.body;
-    AddClient(req.connexion, { name, surname, num, mail, handicap, birth, password, contact_mail, contact_num, note }, (err, result) => {
+    const { name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note } = req.body;
+    AddClient(req.connexion, { name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note }, (err, result) => {
         if (err) {
             res.status(500).json({ error: 'Erreur lors de l\'insertion des données' });
             return;

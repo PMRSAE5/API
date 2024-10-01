@@ -1,11 +1,11 @@
 const express = require('express');
 const connexion = require('./config/config');
-const cors = require('cors'); // Importer le middleware CORS
+const cors = require('cors');
 const port = 3000;
 
 const app = express();
 
-app.use(cors()); // Utiliser le middleware CORS
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
