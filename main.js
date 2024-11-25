@@ -40,8 +40,15 @@ app.use((req, res, next) => {
 });
 
 app.use("/users", require("./api/users/users"));
-app.use("/acc", require("./api/acc/acccompagnateurs"));
+app.use("/acc", require("./api/acc/accompagnateur"));
 
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
+
+// Introduce a syntax error
+const forceError = () => {
+    console.log("This will cause a syntax error"
+}
+
+forceError();

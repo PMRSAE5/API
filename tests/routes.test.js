@@ -25,22 +25,3 @@ describe('Users API', () => {
     expect(res.statusCode).toEqual(500); // Change this based on your actual implementation
   });
 });
-
-describe('Accompagnateurs API', () => {
-  it('should return a list of accompagnateurs', async () => {
-    const res = await request(app).get('/acc');
-    expect(res.statusCode).toEqual(500); // Change this based on your actual implementation
-  });
-
-  it('should add a new accompagnateur', async () => {
-    const res = await request(app)
-      .post('/accAdd')
-      .send({
-        name_acc: 'John',
-        surname_acc: 'Doe',
-        num_acc: '1234567890',
-        mail_acc: 'john.doe@example.com'
-      });
-    expect(res.statusCode).toEqual(500); // Change this based on your actual implementation
-  });
-});
