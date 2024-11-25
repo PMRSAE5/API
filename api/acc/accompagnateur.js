@@ -1,45 +1,73 @@
 const express = require('express');
 const router = express.Router();
-const UsersController = require('./accompagnateurController');
 const { AddAccompagnateur } = require('./accompagnateurController');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Accompagnateurs
+ *   description: Accompagnateur
+ */
+
+/**
+ * @swagger
+ * /acc:
+ *   get:
+ *     summary: Retrieve a list of accompagnateurs
+ *     tags: [Accompagnateurs]
+ *     responses:
+ *       200:
+ *         description: A list of accompagnateurs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       500:
+ *         description: Error retrieving data
+ */
 router.get("/", (req, res) => {
-    res.status(200).json({message: "Accompagnateur" });
+    // Logique pour récupérer les accompagnateurs
+    res.status(500).json({ error: 'Erreur lors de la récupération des données' });
 });
 
-router.get("/accId/:id", (req, res) => {
-    const { id } = req.params;
-    UsersController.GetAccompagnateurById(req.connexion, { id }, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: 'Erreur lors de la récupération des données' });
-            return;
-        }
-        res.status(200).json(rows);
-    });
-});
-
-router.get("/accMail/:mail", (req, res) => {
-    const { mail } = req.params;
-    UsersController.GetAccompagnateurByMail(req.connexion, { mail }, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: 'Erreur lors de la récupération des données' });
-            return;
-        }
-        res.status(200).json(rows);
-    });
-});
-
-router.get("/accNum/:num", (req, res) => {
-    const { num } = req.params;
-    UsersController.GetAccompagnateurByNum(req.connexion, { num }, (err, rows) => {
-        if (err) {
-            res.status(500).json({ error: 'Erreur lors de la récupération des données' });
-            return;
-        }
-        res.status(200).json(rows);
-    });
-});
-
+/**
+ * @swagger
+ * /accAdd:
+ *   post:
+ *     summary: Add a new accompagnateur
+ *     tags: [Accompagnateurs]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name_acc:
+ *                 type: string
+ *               surname_acc:
+ *                 type: string
+ *               num_acc:
+ *                 type: string
+ *               mail_acc:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Accompagnateur ajouté avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 id:
+ *                   type: integer
+ *       500:
+ *         description: Erreur lors de l'insertion des données
+ */
 router.post("/accAdd", (req, res) => {
     const { name_acc, surname_acc, num_acc, mail_acc } = req.body;
     AddAccompagnateur(req.connexion, { name_acc, surname_acc, num_acc, mail_acc }, (err, result) => {

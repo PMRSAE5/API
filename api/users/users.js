@@ -1,12 +1,58 @@
 const express = require('express');
 const router = express.Router();
 const UsersController = require('./usersController');
-const { AddClient } = require('./usersController');
 
+/**
+ * @swagger
+ * tags:
+ *   name: Users
+ *   description: User
+ */
+
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     summary: Retrieve a message for users
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: A message for users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
 router.get("/", (req, res) => {
     res.status(200).json({ message: "Utilisateur" });
 });
 
+/**
+ * @swagger
+ * /users/userId/{id}:
+ *   get:
+ *     summary: Retrieve a user by ID
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The user ID
+ *     responses:
+ *       200:
+ *         description: A user object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       500:
+ *         description: Error retrieving data
+ */
 router.get("/userId/:id", (req, res) => {
     const { id } = req.params;
     UsersController.GetClientById(req.connexion, { id }, (err, rows) => {
@@ -18,6 +64,29 @@ router.get("/userId/:id", (req, res) => {
     });
 });
 
+/**
+ * @swagger
+ * /users/userMail/{mail}:
+ *   get:
+ *     summary: Retrieve a user by email
+ *     tags: [Users]
+ *     parameters:
+ *       - in: path
+ *         name: mail
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The user email
+ *     responses:
+ *       200:
+ *         description: A user object
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       500:
+ *         description: Error retrieving data
+ */
 router.get("/userMail/:mail", (req, res) => {
     const { mail } = req.params;
     UsersController.GetClientByMail(req.connexion, { mail }, (err, rows) => {
@@ -26,17 +95,6 @@ router.get("/userMail/:mail", (req, res) => {
             return;
         }
         res.status(200).json(rows);
-    });
-});
-
-router.post("/userAdd", (req, res) => {
-    const { name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note } = req.body;
-    AddClient(req.connexion, { name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note }, (err, result) => {
-        if (err) {
-            res.status(500).json({ error: 'Erreur lors de l\'insertion des données' });
-            return;
-        }
-        res.status(201).json({ message: 'Client ajouté avec succès', id: result.insertId });
     });
 });
 
