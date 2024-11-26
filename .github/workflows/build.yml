@@ -30,3 +30,11 @@ jobs:
           node main.js &
           sleep 5
           curl -f http://localhost:3000 || exit 1
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage/*.json
+          flags: unittests
+          name: codecov-umbrella
