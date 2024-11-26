@@ -24,3 +24,9 @@ jobs:
 
       - name: Run tests
         run: npm test
+
+      - name: Start application
+        run: |
+          node main.js &
+          sleep 5
+          curl -f http://localhost:3000 || exit 1
