@@ -1,6 +1,6 @@
 ![Build Status](https://github.com/PMRSAE5/API/actions/workflows/build.yml/badge.svg)
 ![NPM Version](https://img.shields.io/npm/v/node)
-![Coverage](https://codecov.io/gh/PMRSAE5/API/branch/main/graph/badge.svg)
+[![codecov](https://codecov.io/gh/PMRSAE5/API/branch/dev/graph/badge.svg?token=1PKGPFMGRU)](https://codecov.io/gh/PMRSAE5/API)
 
 # API Node.js pour la gestion de l'application PMove :
 
