@@ -17,11 +17,11 @@ describe('Users API', () => {
 
   it('should return a user by ID', async () => {
     const res = await request(app).get('/users/userId/1');
-    expect(res.statusCode).toEqual(500); // Change this based on your actual implementation
+    expect(res.statusCode).toEqual(500);
   });
 
   it('should return a user by email', async () => {
     const res = await request(app).get('/users/userMail/test@example.com');
-    expect(res.statusCode).toEqual(500); // Change this based on your actual implementation
+    expect(res.statusCode).toEqual(500);
   });
 });
