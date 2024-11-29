@@ -24,6 +24,5 @@ const GetClientByMail = (connexion, { mail }, callback) => {
 
 module.exports = {
     GetClientById,
-    GetClientByMail,
-    AddClient
+    GetClientByMail
 };

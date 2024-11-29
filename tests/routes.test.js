@@ -48,16 +48,4 @@ describe('Accompagnateurs API', () => {
     expect(res.body).toHaveProperty('error', 'Erreur lors de la récupération des données');
   });
 
-  // it('should add a new accompagnateur with different data', async () => {
-  //   const newAcc = {
-  //     name_acc: 'Jane',
-  //     surname_acc: 'Smith',
-  //     num_acc: '0987654321',
-  //     mail_acc: 'jane.smith@example.com'
-  //   };
-  //   const res = await request(app).post('/accAdd').send(newAcc);
-  //   expect(res.statusCode).toEqual(201);
-  //   expect(res.body).toHaveProperty('message', 'Accompagnateur ajouté avec succès');
-  //   expect(res.body).toHaveProperty('id');
-  // });
 });

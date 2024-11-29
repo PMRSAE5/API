@@ -1,4 +1,4 @@
-const { GetClientById, GetClientByMail, AddClient } = require('../api/users/usersController');
+const { GetClientById, GetClientByMail } = require('../api/users/usersController');
 
 describe('User Controller', () => {
     let mockConnexion;
