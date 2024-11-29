@@ -13,19 +13,18 @@ const GetAccompagnateurByNum = (connexion, { num }, callback) => {
     connexion.query(query, [num], callback);
 }
 
-const AddAccompagnateur = (connexion, { name_acc, surname_acc, num_acc, mail_acc }, callback) => {
-    const query = `
-        INSERT INTO Accompagnateur (name_acc, surname_acc, num_acc, mail_acc)
-        VALUES (?, ?, ?, ?)
-    `;
-    const values = [name_acc, surname_acc, num_acc, mail_acc];
+// const AddAccompagnateur = (connexion, { name_acc, surname_acc, num_acc, mail_acc }, callback) => {
+//     const query = `
+//         INSERT INTO Accompagnateur (name_acc, surname_acc, num_acc, mail_acc)
+//         VALUES (?, ?, ?, ?)
+//     `;
+//     const values = [name_acc, surname_acc, num_acc, mail_acc];
 
-    connexion.query(query, values, callback);
-}
+//     connexion.query(query, values, callback);
+// }
 
 module.exports = {
     GetAccompagnateurById,
     GetAccompagnateurByMail,
-    GetAccompagnateurByNum,
-    AddAccompagnateur
+    GetAccompagnateurByNum
 };
