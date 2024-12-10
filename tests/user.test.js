@@ -3,14 +3,16 @@ const {
   GetClientByMail,
 } = require("../api/users/usersController");
 
+jest.mock("../config/config", () => ({
+  query: jest.fn(),
+}));
+
 describe("User Controller", () => {
   let mockConnexion;
   let mockCallback;
 
   beforeEach(() => {
-    mockConnexion = {
-      query: jest.fn(),
-    };
+    mockConnexion = require("../config/config");
     mockCallback = jest.fn();
   });
 
