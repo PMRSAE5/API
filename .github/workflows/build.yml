@@ -10,6 +10,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:5.7
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pmove
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -25,8 +39,22 @@ jobs:
       - name: Set environment variable for tests
         run: echo "NODE_ENV=test" >> $GITHUB_ENV
 
+      - name: Wait for MySQL
+        run: |
+          for i in `seq 1 30`; do
+            nc -z localhost 3306 && echo Success && exit 0
+            echo "Waiting for MySQL..."
+            sleep 1
+          done
+          echo "MySQL did not start in time" && exit 1
+
       - name: Run tests with coverage
         run: npm test -- --coverage
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_NAME: pmove
 
       - name: Start application
         run: |
@@ -36,8 +64,3 @@ jobs:
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/*.json
-          flags: unittests
-          name: codecov-umbrella
