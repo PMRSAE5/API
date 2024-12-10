@@ -1,8 +1,6 @@
 const mysql = require("mysql");
-require("dotenv").config();
 
 const connexion = mysql.createConnection({
-  connectionLimit: 10,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -17,7 +15,9 @@ connexion.connect((err) => {
       process.exit(1);
     }
   } else {
-    console.log("Connecté à la base de données !");
+    if (process.env.NODE_ENV !== "test") {
+      console.log("Connecté à la base de données !");
+    }
   }
 });
 

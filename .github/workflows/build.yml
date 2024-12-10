@@ -17,10 +17,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: "16"
 
       - name: Install dependencies
         run: npm install
+
+      - name: Set environment variable for tests
+        run: echo "NODE_ENV=test" >> $GITHUB_ENV
 
       - name: Run tests with coverage
         run: npm test -- --coverage
