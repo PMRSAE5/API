@@ -1,13 +1,13 @@
 const connexion = require("../../config/config");
 
 // Rechercher un client par ID
-const GetClientById = ({ id }, callback) => {
+const GetClientById = (connexion, { id }, callback) => {
   const query = "SELECT * FROM Client WHERE ID_Client = ?";
   connexion.query(query, [id], callback);
 };
 
 // Rechercher un client par email
-const GetClientByMail = ({ mail }, callback) => {
+const GetClientByMail = (connexion, { mail }, callback) => {
   const query = "SELECT * FROM Client WHERE mail = ?";
   connexion.query(query, [mail], callback);
 };
