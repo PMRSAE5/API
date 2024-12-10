@@ -21,6 +21,7 @@
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "codecov": "^3.8.3",
     "jest": "^29.7.0",
     "supertest": "^7.0.0"
   }
