@@ -1,5 +1,5 @@
 const express = require("express");
-require ("dotenv").config();
+require('dotenv').config();
 const connexion = require("./config/config");
 const cors = require("cors");
 const swaggerJsdoc = require("swagger-jsdoc");
@@ -43,11 +43,6 @@ const swaggerOptions = {
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
-
-// Route de base
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello World!" });
-});
 
 // Middleware pour ajouter la connexion MySQL à chaque requête
 app.use((req, res, next) => {
