@@ -13,9 +13,12 @@ const connexion = mysql.createConnection({
 connexion.connect((err) => {
   if (err) {
     console.error("Erreur de connexion à la base de données :", err);
-    process.exit(1);
+    if (process.env.NODE_ENV !== "test") {
+      process.exit(1);
+    }
+  } else {
+    console.log("Connecté à la base de données !");
   }
-  console.log("Connecté à la base de données !");
 });
 
 module.exports = connexion;
