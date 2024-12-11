@@ -55,11 +55,6 @@ app.use("/users", require("./api/users/users")); // Routes pour les utilisateurs
 app.use("/acc", require("./api/acc/accompagnateur"));
 app.use("/ag", require("./api/ag/agent"));
 
-// Ajoutez cette route pour la racine
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 // Démarrage du serveur
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
