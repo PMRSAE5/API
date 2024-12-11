@@ -25,13 +25,19 @@ jobs:
       - name: Set environment variable for tests
         run: echo "NODE_ENV=test" >> $GITHUB_ENV
 
-      # Désactivation des tests pour le moment
-      # - name: Run tests
-      #   run: npm test
+      - name: Run tests with coverage
+        run: npm test -- --coverage
 
-      # Désactivation du démarrage de l'application pour le moment
-      # - name: Start application
-      #   run: |
-      #     node main.js &
-      #     sleep 5
-      #     curl -f http://localhost:3000 || exit 1
+      - name: Start application
+        run: |
+          node main.js &
+          sleep 5
+          curl -f http://localhost:3000/ || exit 1
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/*.json
+          flags: unittests
+          name: codecov-umbrella
