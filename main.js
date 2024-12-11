@@ -53,6 +53,7 @@ app.use((req, res, next) => {
 // Import des routes
 app.use("/users", require("./api/users/users")); // Routes pour les utilisateurs
 app.use("/acc", require("./api/acc/accompagnateur"));
+app.use("/ag", require("./api/ag/agent"));
 
 // Démarrage du serveur
 app.listen(port, () => {
