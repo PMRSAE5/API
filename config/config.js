@@ -1,9 +1,9 @@
 const mysql = require('mysql2/promise');
-
-// Charger les variables d'environnement
+const redis = require('redis');
 require('dotenv').config();
 
-const connexion = mysql.createPool({
+// Configuration MySQL
+const mysqlConnexion = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
@@ -13,4 +13,19 @@ const connexion = mysql.createPool({
   queueLimit: 0
 });
 
-module.exports = connexion;
+// Configuration Redis
+const redisClient = redis.createClient({
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  password: process.env.REDIS_PASSWORD
+});
+
+redisClient.connect().catch(console.error);
+
+redisClient.on('error', (err) => {
+  console.error('Redis error:', err);
+});
+
+module.exports = {
+  mysqlConnexion,
+  redisClient
+};

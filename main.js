@@ -1,6 +1,6 @@
 const express = require("express");
 require('dotenv').config();
-const connexion = require("./config/config");
+const { mysqlConnexion, redisClient } = require("./config/config");
 const cors = require("cors");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
@@ -46,7 +46,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware pour ajouter la connexion MySQL à chaque requête
 app.use((req, res, next) => {
-  req.connexion = connexion; // Ajout de la connexion MySQL dans l'objet `req`
+  req.connexion = mysqlConnexion; // Ajout de la connexion MySQL dans l'objet `req`
   next();
 });
 
@@ -54,8 +54,21 @@ app.use((req, res, next) => {
 app.use("/users", require("./api/users/users")); // Routes pour les utilisateurs
 app.use("/acc", require("./api/acc/accompagnateur"));
 app.use("/ag", require("./api/ag/agent"));
+app.use("/traj", require("./api/traj/trajet")); // Ajoutez cette ligne pour inclure la nouvelle route
 
-// Démarrage du serveur
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+// Ajoutez cette route pour la racine
+app.get('/', (req, res) => {
+  res.send('Hello World!');
+});
+
+// Démarrage du serveur après la connexion à Redis
+redisClient.on('ready', () => {
+  console.log('Redis client connected');
+  app.listen(port, () => {
+    console.log(`Server is running on http://localhost:${port}`);
+  });
+});
+
+redisClient.on('error', (err) => {
+  console.error('Redis error:', err);
 });
