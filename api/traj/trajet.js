@@ -7,17 +7,20 @@ router.get('/trajet/:lieu', async (req, res) => {
   const lieu = req.params.lieu;
 
   try {
-    // Récupérer les données de Redis
-    const data = await redisClient.get('Trajet');
-    if (!data) {
-      return res.status(404).json({ message: 'Data not found in Redis' });
+    // Récupérer toutes les sous-clés de 'Trajet'
+    const keys = await redisClient.hKeys('Trajet');
+    if (keys.length === 0) {
+      return res.status(404).json({ message: 'No data found in Redis' });
     }
 
-    // Convertir les données JSON en objet
-    const trajet = JSON.parse(data);
+    // Récupérer les données pour chaque sous-clé
+    const trajets = await Promise.all(keys.map(async (key) => {
+      const data = await redisClient.hGet('Trajet', key);
+      return JSON.parse(data);
+    }));
 
     // Filtrer les trajets par lieu de départ ou d'arrivée
-    const filteredTrajet = trajet.trajet.filter(t => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
+    const filteredTrajet = trajets.flatMap(t => t.trajet).filter(t => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
 
     if (filteredTrajet.length === 0) {
       return res.status(404).json({ message: 'No trajet found for the specified location' });

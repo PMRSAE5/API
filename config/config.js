@@ -1,5 +1,5 @@
 const mysql = require('mysql2/promise');
-const redis = require('redis');
+const { createClient } = require('redis');
 require('dotenv').config();
 
 // Configuration MySQL
@@ -14,7 +14,7 @@ const mysqlConnexion = mysql.createPool({
 });
 
 // Configuration Redis
-const redisClient = redis.createClient({
+const redisClient = createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   password: process.env.REDIS_PASSWORD
 });
