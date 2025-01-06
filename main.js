@@ -1,11 +1,14 @@
 const express = require('express');
-const mysql = require('mysql');
+const mysql = require('mysql2'); // Utilisez mysql2
 const { createClient } = require('redis');
 const swaggerJsdoc = require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Middleware pour parser le corps des requêtes HTTP
+app.use(express.json());
 
 // Configuration de la connexion à la base de données MySQL
 const db = mysql.createConnection({

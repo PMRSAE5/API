@@ -1,8 +1,6 @@
-const { mysqlConnexion } = require('../../config/config');
-
-const getAgentByName = async (name) => {
+const getAgentByName = async (connexion, name) => {
     try {
-        const [rows] = await mysqlConnexion.execute('SELECT * FROM Agent WHERE name = ?', [name]);
+        const [rows] = await connexion.promise().execute('SELECT * FROM Agent WHERE name = ?', [name]);
         return rows;
     } catch (error) {
         console.error('Error fetching agent by name:', error);
