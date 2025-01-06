@@ -1,29 +1,41 @@
-const express = require("express");
-require('dotenv').config();
-const { mysqlConnexion, redisClient } = require("./config/config");
-const cors = require("cors");
-const swaggerJsdoc = require("swagger-jsdoc");
-const swaggerUi = require("swagger-ui-express");
-const session = require("express-session"); // Ajout de la gestion de sessions
-const port = 3000;
+const express = require('express');
+const mysql = require('mysql');
+const { createClient } = require('redis');
+const swaggerJsdoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
-// Middleware pour CORS et JSON
-app.use(cors({ origin: "http://localhost:3001", credentials: true })); // Autorise le client React
-app.use(express.json());
+// Configuration de la connexion à la base de données MySQL
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'pmove'
+});
 
-// Configuration des sessions
-app.use(
-  session({
-    secret: "123456789", // Remplacez par une clé sécurisée
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: false }, // Passez `true` en production avec HTTPS
-  })
-);
+// Connexion à la base de données MySQL
+db.connect((err) => {
+  if (err) {
+    console.error('Erreur de connexion à la base de données:', err);
+    return;
+  }
+  console.log('Connecté à la base de données MySQL');
+});
 
-// Swagger Configuration
+// Configuration Redis
+const redisClient = createClient({
+  url: 'redis://192.168.1.100:6379',
+  password: 'pika123'
+});
+
+redisClient.connect().catch(console.error);
+
+redisClient.on('error', (err) => {
+  console.error('Redis error:', err);
+});
+
 const swaggerOptions = {
   swaggerDefinition: {
     openapi: "3.0.0",
@@ -46,7 +58,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Middleware pour ajouter la connexion MySQL à chaque requête
 app.use((req, res, next) => {
-  req.connexion = mysqlConnexion; // Ajout de la connexion MySQL dans l'objet `req`
+  req.connexion = db; // Ajout de la connexion MySQL dans l'objet `req`
   next();
 });
 
@@ -67,8 +79,4 @@ redisClient.on('ready', () => {
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
   });
-});
-
-redisClient.on('error', (err) => {
-  console.error('Redis error:', err);
 });

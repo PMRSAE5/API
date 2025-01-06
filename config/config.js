@@ -3,6 +3,7 @@ const { createClient } = require('redis');
 require('dotenv').config();
 
 // Configuration MySQL
+/*
 const mysqlConnexion = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -12,6 +13,7 @@ const mysqlConnexion = mysql.createPool({
   connectionLimit: 10,
   queueLimit: 0
 });
+*/
 
 // Configuration Redis
 const redisClient = createClient({
@@ -26,6 +28,6 @@ redisClient.on('error', (err) => {
 });
 
 module.exports = {
-  mysqlConnexion,
+  // mysqlConnexion,
   redisClient
 };
