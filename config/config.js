@@ -1,6 +1,6 @@
-const mysql = require('mysql2/promise');
-const { createClient } = require('redis');
-require('dotenv').config();
+const mysql = require("mysql2/promise");
+const { createClient } = require("redis");
+require("dotenv").config();
 
 // Configuration MySQL
 const mysqlConnexion = mysql.createPool({
@@ -10,22 +10,22 @@ const mysqlConnexion = mysql.createPool({
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0
+  queueLimit: 0,
 });
 
 // Configuration Redis
 const redisClient = createClient({
   url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-  password: process.env.REDIS_PASSWORD
+  password: process.env.REDIS_PASSWORD,
 });
 
 redisClient.connect().catch(console.error);
 
-redisClient.on('error', (err) => {
-  console.error('Redis error:', err);
+redisClient.on("error", (err) => {
+  console.error("Redis error:", err);
 });
 
 module.exports = {
   mysqlConnexion,
-  redisClient
+  redisClient,
 };

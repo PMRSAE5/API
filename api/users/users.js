@@ -102,10 +102,42 @@ router.get("/userMail/:mail", (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /users/userAdd:
+ *   post:
+ *     summary: Add a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User successfully added
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error adding user
+ */
 router.post("/userAdd", (req, res) => {
   console.log("Requête reçue :", req.body);
 
-  UsersController.AddClient(req.body, (err, result) => {
+  UsersController.AddClient(req.connexion, req.body, (err, result) => {
     if (err) {
       console.error("Erreur lors de l'ajout :", err);
       return res
@@ -116,48 +148,55 @@ router.post("/userAdd", (req, res) => {
   });
 });
 
-router.post("/userLog", (req, res) => {
-  try {
-    console.log("Données reçues :", req.body); // Debug
+router.put("/update", (req, res) => {
+  const updatedData = req.body;
 
-    // Extraction des champs depuis req.body
-    const { mail, password } = req.body;
+  if (!updatedData.ID_Client) {
+    return res.status(400).json({
+      success: false,
+      message: "ID_Client est requis.",
+    });
+  }
 
-    // Vérification de la présence des données requises
-    if (!mail || !password) {
-      return res
-        .status(400)
-        .json({ error: "Veuillez fournir un email et un mot de passe." });
+  UsersController.UpdateClient(req.connexion, updatedData, (err, result) => {
+    if (err) {
+      console.error("Erreur lors de la mise à jour :", err);
+      return res.status(500).json({
+        success: false,
+        message: "Erreur serveur.",
+      });
     }
 
-    // Appel à la méthode LoginUser du contrôleur
-    UsersController.LoginUser(
-      req.connexion,
-      { mail, password },
-      (err, results) => {
-        if (err) {
-          console.error("Erreur lors de la connexion :", err);
-          return res.status(500).json({
-            error: "Erreur interne lors de la tentative de connexion.",
-          });
-        }
+    res.status(200).json({
+      success: true,
+      message: "Utilisateur mis à jour avec succès.",
+    });
+  });
+});
 
-        // Vérifie si l'utilisateur est trouvé
-        if (!results || results.length === 0) {
-          return res
-            .status(401)
-            .json({ error: "Email ou mot de passe incorrect." });
-        }
+router.post("/userLog", (req, res) => {
+  const { mail, password } = req.body;
 
-        // Connexion réussie
-        const user = results[0]; // Premier utilisateur trouvé
-        return res.status(200).json({ message: "Connexion réussie", user });
+  UsersController.LoginUser(
+    req.connexion,
+    { mail, password },
+    (err, results) => {
+      if (err) {
+        console.error("Erreur SQL :", err);
+        return res
+          .status(500)
+          .json({ error: "Erreur interne lors de la connexion." });
       }
-    );
-  } catch (error) {
-    console.error("Erreur inattendue :", error);
-    res.status(500).json({ error: "Erreur interne du serveur." });
-  }
+
+      if (results.length === 0) {
+        return res.status(401).json({ error: "Utilisateur non trouvé." });
+      }
+
+      const user = results[0];
+      console.log("Utilisateur trouvé :", user);
+      return res.status(200).json({ message: "Connexion réussie", user });
+    }
+  );
 });
 
 router.post("/logout", (req, res) => {
@@ -169,6 +208,36 @@ router.post("/logout", (req, res) => {
 
     res.clearCookie("connect.sid"); // Supprime le cookie de session
     return res.status(200).json({ message: "Déconnexion réussie." });
+  });
+});
+
+router.get("/me", (req, res) => {
+  if (req.session.user) {
+    res.status(200).json({ user: req.session.user });
+  } else {
+    res.status(401).json({ error: "Utilisateur non connecté" });
+  }
+});
+
+router.get("/test", (req, res) => {
+  res.status(200).json({ message: "Connexion API OK" });
+});
+
+router.get("/userId/:id", (req, res) => {
+  const { id } = req.params;
+  console.log("Requête pour ID_Client :", id);
+
+  UsersController.GetClientById(req.connexion, { id }, (err, rows) => {
+    if (err) {
+      console.error("Erreur dans GetClientById :", err);
+      return res
+        .status(500)
+        .json({ error: "Erreur lors de la récupération des données." });
+    }
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Utilisateur introuvable." });
+    }
+    res.status(200).json(rows);
   });
 });
 

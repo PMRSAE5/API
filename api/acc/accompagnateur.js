@@ -1,6 +1,6 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { AddAccompagnateur } = require('./accompagnateurController');
+const { AddAccompagnateur } = require("./accompagnateurController");
 
 /**
  * @swagger
@@ -28,8 +28,8 @@ const { AddAccompagnateur } = require('./accompagnateurController');
  *         description: Error retrieving data
  */
 router.get("/", (req, res) => {
-    // Logique pour récupérer les accompagnateurs
-    res.status(500).json({ error: 'Erreur lors de la récupération des données' });
+  // Logique pour récupérer les accompagnateurs
+  res.status(500).json({ error: "Erreur lors de la récupération des données" });
 });
 
 /**
@@ -68,15 +68,26 @@ router.get("/", (req, res) => {
  *       500:
  *         description: Erreur lors de l'insertion des données
  */
-// router.post("/accAdd", (req, res) => {
-//     const { name_acc, surname_acc, num_acc, mail_acc } = req.body;
-//     AddAccompagnateur(req.connexion, { name_acc, surname_acc, num_acc, mail_acc }, (err, result) => {
-//         if (err) {
-//             res.status(500).json({ error: 'Erreur lors de l\'insertion des données' });
-//             return;
-//         }
-//         res.status(201).json({ message: 'Accompagnateur ajouté avec succès', id: result.insertId });
-//     });
-// });
+router.post("/accAdd", (req, res) => {
+  const { name_acc, surname_acc, num_acc, mail_acc } = req.body;
+  AddAccompagnateur(
+    req.connexion,
+    { name_acc, surname_acc, num_acc, mail_acc },
+    (err, result) => {
+      if (err) {
+        res
+          .status(500)
+          .json({ error: "Erreur lors de l'insertion des données" });
+        return;
+      }
+      res
+        .status(201)
+        .json({
+          message: "Accompagnateur ajouté avec succès",
+          id: result.insertId,
+        });
+    }
+  );
+});
 
 module.exports = router;
