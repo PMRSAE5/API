@@ -2,7 +2,6 @@ const mysql = require("mysql2/promise");
 const { createClient } = require("redis");
 require("dotenv").config();
 
-// Configuration MySQL
 const mysqlConnexion = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -29,3 +28,5 @@ module.exports = {
   mysqlConnexion,
   redisClient,
 };
+
+mysqlConnexion, redisClient;

@@ -4,41 +4,57 @@ const { redisClient } = require("../../config/config");
 const trajetController = require("./trajetController");
 
 // Route pour récupérer les informations de trajet en fonction d'un lieu
-router.get("/trajet/:lieu", async (req, res) => {
-  const lieu = req.params.lieu;
+// router.get("/trajet/:lieu", async (req, res) => {
+//   const lieu = req.params.lieu;
+//   console.log(`Received request for lieu: ${lieu}`);
 
-  try {
-    // Récupérer toutes les sous-clés de 'Trajet'
-    const keys = await redisClient.hKeys("Trajet");
-    if (keys.length === 0) {
-      return res.status(404).json({ message: "No data found in Redis" });
-    }
+//   try {
+//     // Récupérer toutes les sous-clés de 'Trajet'
+//     const keys = await redisClient.hKeys("Trajet");
+//     if (keys.length === 0) {
+//       return res.status(404).json({ message: "No data found in Redis" });
+//     }
 
-    // Récupérer les données pour chaque sous-clé
-    const trajets = await Promise.all(
-      keys.map(async (key) => {
-        const data = await redisClient.hGet("Trajet", key);
-        return JSON.parse(data);
-      })
-    );
+//     // Récupérer les données pour chaque sous-clé
+//     const trajets = await Promise.all(
+//       keys.map(async (key) => {
+//         const data = await redisClient.hGet("Trajet", key);
+//         return JSON.parse(data);
+//       })
+//     );
 
-    // Filtrer les trajets par lieu de départ ou d'arrivée
-    const filteredTrajet = trajets
-      .flatMap((t) => t.trajet)
-      .filter((t) => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
+//     // Filtrer les trajets par lieu de départ ou d'arrivée
+//     const filteredTrajet = trajets
+//       .flatMap((t) => t.trajet)
+//       .filter((t) => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
 
-    if (filteredTrajet.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No trajet found for the specified location" });
-    }
+//     if (filteredTrajet.length === 0) {
+//       return res
+//         .status(404)
+//         .json({ message: "No trajet found for the specified location" });
+//     }
 
-    res.json(filteredTrajet);
-  } catch (error) {
-    console.error("Error fetching data from Redis:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-});
+//     res.json(filteredTrajet);
+//   } catch (error) {
+//     console.error("Error fetching data from Redis:", error);
+//     res.status(500).json({ message: "Internal server error" });
+
+//     // Filtrer les trajets par lieu
+//     const filteredTrajets = trajets.filter(trajet =>
+//       trajet.trajet.some(etape => etape.lieu_depart === lieu || etape.lieu_arrivee === lieu)
+//     );
+
+//     if (filteredTrajets.length === 0) {
+//       return res.status(404).json({ message: 'No trajets found for the specified lieu' });
+//     }
+
+//     res.status(200).json(filteredTrajets);
+//   } catch (err) {
+//     console.error('Error retrieving data from Redis:', err);
+//     res.status(500).json({ error: 'Erreur lors de la récupération des données' });
+
+//   }
+// });
 
 router.post("/checkReservation", async (req, res) => {
   const { num_reservation, base } = req.body;
@@ -64,11 +80,9 @@ router.post("/checkReservation", async (req, res) => {
 
     if (!db) {
       console.log("Base de données non valide :", base);
-      return res
-        .status(400)
-        .json({
-          message: "Base de données non valide. Utilisez 'RATP' ou 'SNCF'.",
-        });
+      return res.status(400).json({
+        message: "Base de données non valide. Utilisez 'RATP' ou 'SNCF'.",
+      });
     }
 
     // Appel au contrôleur avec num_reservation

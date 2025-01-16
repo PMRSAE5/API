@@ -1,10 +1,11 @@
+
 const express = require("express");
 const mysql = require("mysql2"); // Utilisez mysql2
 const { createClient } = require("redis");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const mongoose = require("mongoose");
-require("dotenv").config(); // Charge les variables d'environnement depuis .env
+require("dotenv").config(); // Charge les variables d'environnement depuis .env;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -16,6 +17,7 @@ const mongoRATP = mongoose.createConnection(process.env.MONGO_URI_RATP, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
 
 mongoRATP.on("connected", () => {
   console.log("Connecté à MongoDB (RATP)");
@@ -52,27 +54,39 @@ const db = mysql.createConnection({
   user: "root",
   password: "",
   database: "pmove",
-});
 
 // Connexion à la base de données MySQL
 db.connect((err) => {
   if (err) {
+
     console.error("Erreur de connexion à la base de données:", err);
     return;
   }
   console.log("Connecté à la base de données MySQL");
+
+    console.error('Erreur de connexion à la base de données:', err);
+    return;
+  }
+  console.log('Connecté à la base de données MySQL');
+
 });
 
 // Configuration Redis
 const redisClient = createClient({
   url: "redis://172.20.10.11:6379",
   password: "kaka",
+
 });
 
 redisClient.connect().catch(console.error);
 
+
 redisClient.on("error", (err) => {
   console.error("Redis error:", err);
+
+redisClient.on('error', (err) => {
+  console.error('Redis error:', err);
+});
 });
 
 const swaggerOptions = {
@@ -118,4 +132,8 @@ redisClient.on("ready", () => {
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
   });
+
 });
+
+
+
