@@ -1,15 +1,22 @@
-
 const express = require("express");
 const mysql = require("mysql2"); // Utilisez mysql2
 const { createClient } = require("redis");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const mongoose = require("mongoose");
+const cors = require("cors"); // Import du middleware CORS
 require("dotenv").config(); // Charge les variables d'environnement depuis .env;
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
+app.use(
+  cors({
+    origin: "http://localhost:3000", // Autorise uniquement votre frontend
+    methods: ["GET", "POST", "PUT", "DELETE"], // Méthodes HTTP autorisées
+    credentials: true, // Si vous utilisez des cookies ou des headers d'autorisation
+  })
+);
 // Middleware pour parser le corps des requêtes HTTP
 app.use(express.json());
 // Connexion à MongoDB RATP
@@ -17,7 +24,6 @@ const mongoRATP = mongoose.createConnection(process.env.MONGO_URI_RATP, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
-
 
 mongoRATP.on("connected", () => {
   console.log("Connecté à MongoDB (RATP)");
@@ -54,40 +60,35 @@ const db = mysql.createConnection({
   user: "root",
   password: "",
   database: "pmove",
+});
 
 // Connexion à la base de données MySQL
 db.connect((err) => {
   if (err) {
-
     console.error("Erreur de connexion à la base de données:", err);
     return;
   }
   console.log("Connecté à la base de données MySQL");
 
-    console.error('Erreur de connexion à la base de données:', err);
-    return;
-  }
-  console.log('Connecté à la base de données MySQL');
+  console.error("Erreur de connexion à la base de données:", err);
+  return;
+}, console.log("Connecté à la base de données MySQL"));
 
-});
+// // Configuration Redis
+// const redisClient = createClient({
+//   url: "redis://172.20.10.11:6379",
+//   password: "kaka",
+// });
 
-// Configuration Redis
-const redisClient = createClient({
-  url: "redis://172.20.10.11:6379",
-  password: "kaka",
+// redisClient.connect().catch(console.error);
 
-});
+// redisClient.on("error", (err) => {
+//   console.error("Redis error:", err);
 
-redisClient.connect().catch(console.error);
-
-
-redisClient.on("error", (err) => {
-  console.error("Redis error:", err);
-
-redisClient.on('error', (err) => {
-  console.error('Redis error:', err);
-});
-});
+//   redisClient.on("error", (err) => {
+//     console.error("Redis error:", err);
+//   });
+// });
 
 const swaggerOptions = {
   swaggerDefinition: {
@@ -120,20 +121,21 @@ app.use("/users", require("./api/users/users")); // Routes pour les utilisateurs
 app.use("/acc", require("./api/acc/accompagnateur"));
 app.use("/ag", require("./api/ag/agent"));
 app.use("/traj", require("./api/traj/trajet")); // Ajoutez cette ligne pour inclure la nouvelle route
-
+// app.use("/reservation", require("./api/reservation/reservation"));
 // Ajoutez cette route pour la racine
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// Démarrage du serveur après la connexion à Redis
-redisClient.on("ready", () => {
-  console.log("Redis client connected");
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-  });
-
+// Démarrage du serveur
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });
 
-
-
+// // Démarrage du serveur après la connexion à Redis
+// redisClient.on("ready", () => {
+//   console.log("Redis client connected");
+//   app.listen(port, () => {
+//     console.log(`Server is running on http://localhost:${port}`);
+//   });
+// });

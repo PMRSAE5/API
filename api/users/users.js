@@ -206,7 +206,7 @@ router.post("/logout", (req, res) => {
       return res.status(500).json({ error: "Erreur lors de la déconnexion." });
     }
 
-    res.clearCookie("connect.sid"); // Supprime le cookie de session
+    res.clearCookie("connect.sid"); // Supprime le cookie de session (si utilisé)
     return res.status(200).json({ message: "Déconnexion réussie." });
   });
 });
@@ -238,6 +238,29 @@ router.get("/userId/:id", (req, res) => {
       return res.status(404).json({ error: "Utilisateur introuvable." });
     }
     res.status(200).json(rows);
+  });
+}); // Connexion à votre base de données MySQL
+
+// Endpoint pour récupérer le profil utilisateur
+router.get("/profile", (req, res) => {
+  const userId = req.session.userID; // Récupère l'ID de l'utilisateur depuis la session
+  if (!userId) {
+    return res.status(401).json({ error: "Utilisateur non connecté." });
+  }
+
+  const query = "SELECT * FROM clients WHERE ID_Client = ?";
+  db.query(query, [userId], (err, results) => {
+    if (err) {
+      console.error("Erreur lors de la récupération du profil :", err);
+      return res.status(500).json({ error: "Erreur serveur." });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: "Utilisateur non trouvé." });
+    }
+
+    // Retourne les données utilisateur
+    res.json(results[0]);
   });
 });
 
