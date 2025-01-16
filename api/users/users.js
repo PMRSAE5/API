@@ -148,6 +148,46 @@ router.post("/userAdd", (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /users/update:
+ *   put:
+ *     summary: Update a user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               ID_Client:
+ *                 type: integer
+ *               name:
+ *                 type: string
+ *               surname:
+ *                 type: string
+ *               mail:
+ *                 type: string
+ *               num:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User successfully updated
+ *         content:
+ *            application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: ID_Client is required
+ *       500:
+ *         description: Error updating user
+ */
 router.put("/update", (req, res) => {
   const updatedData = req.body;
 
@@ -174,6 +214,40 @@ router.put("/update", (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /users/userLog:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               mail:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: User successfully logged in
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 user:
+ *                   type: object
+ *       401:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/userLog", (req, res) => {
   const { mail, password } = req.body;
 
@@ -199,6 +273,25 @@ router.post("/userLog", (req, res) => {
   );
 });
 
+/**
+ * @swagger
+ * /users/logout:
+ *   post:
+ *     summary: Log out a user
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: User successfully logged out
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       500:
+ *         description: Error logging out
+ */
 router.post("/logout", (req, res) => {
   req.session.destroy((err) => {
     if (err) {
@@ -223,25 +316,42 @@ router.get("/test", (req, res) => {
   res.status(200).json({ message: "Connexion API OK" });
 });
 
-router.get("/userId/:id", (req, res) => {
-  const { id } = req.params;
-  console.log("Requête pour ID_Client :", id);
+// router.get("/userId/:id", (req, res) => {
+//   const { id } = req.params;
+//   console.log("Requête pour ID_Client :", id);
 
-  UsersController.GetClientById(req.connexion, { id }, (err, rows) => {
-    if (err) {
-      console.error("Erreur dans GetClientById :", err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération des données." });
-    }
-    if (rows.length === 0) {
-      return res.status(404).json({ error: "Utilisateur introuvable." });
-    }
-    res.status(200).json(rows);
-  });
-}); // Connexion à votre base de données MySQL
+//   UsersController.GetClientById(req.connexion, { id }, (err, rows) => {
+//     if (err) {
+//       console.error("Erreur dans GetClientById :", err);
+//       return res
+//         .status(500)
+//         .json({ error: "Erreur lors de la récupération des données." });
+//     }
+//     if (rows.length === 0) {
+//       return res.status(404).json({ error: "Utilisateur introuvable." });
+//     }
+//     res.status(200).json(rows);
+//   });
+// });
 
-// Endpoint pour récupérer le profil utilisateur
+/**
+ * @swagger
+ * /users/profile:
+ *   get:
+ *     summary: Retrieve the profile of the logged-in user
+ *     tags: [Users]
+ *     responses:
+ *       200:
+ *         description: User profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       401:
+ *         description: User not logged in
+ *       500:
+ *         description: Internal server error
+ */
 router.get("/profile", (req, res) => {
   const userId = req.session.userID; // Récupère l'ID de l'utilisateur depuis la session
   if (!userId) {

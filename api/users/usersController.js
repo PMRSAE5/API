@@ -14,7 +14,6 @@ const GetClientByMail = (connexion, { mail }, callback) => {
 
 // Ajouter un nouveau client
 const AddClient = (
-  connexion,
   {
     name,
     surname,
@@ -48,42 +47,11 @@ const AddClient = (
     note,
   ];
 
-  // Utilisation correcte de connexion
   connexion.query(query, values, callback);
 };
-
 const LoginUser = (connexion, { mail, password }, callback) => {
   const query = "SELECT * FROM client WHERE mail = ? AND password = ?";
-  console.log("Requête SQL exécutée :", query);
-  console.log("Paramètres SQL :", [mail, password]);
-
-  connexion.query(query, [mail, password], (err, results) => {
-    if (err) {
-      console.error("Erreur dans la requête SQL :", err);
-      return callback(err, null);
-    }
-
-    // Log des résultats de la requête SQL
-    console.log("Résultats de la requête SQL :", results);
-
-    callback(null, results);
-  });
-};
-
-// Mettre à jour un client par ID
-const UpdateClient = (
-  connexion,
-  { ID_Client, name, surname, mail, num },
-  callback
-) => {
-  const query = `
-    UPDATE Client
-    SET name = ?, surname = ?, mail = ?, num = ?
-    WHERE ID_Client = ?
-  `;
-  const values = [name, surname, mail, num, ID_Client];
-
-  connexion.query(query, values, callback);
+  connexion.query(query, [mail, password], callback);
 };
 
 module.exports = {
@@ -91,5 +59,4 @@ module.exports = {
   GetClientByMail,
   AddClient,
   LoginUser,
-  UpdateClient,
 };
