@@ -1,4 +1,4 @@
-const express = require('express');
+const express = require("express");
 const mysql = require("mysql2"); // Utilisez mysql2
 const { createClient } = require("redis");
 const swaggerJsdoc = require("swagger-jsdoc");
@@ -20,12 +20,11 @@ app.use(
 // Middleware pour parser le corps des requêtes HTTP
 app.use(express.json());
 
-<<<<<<< HEAD
 app.use((req, res, next) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
   next();
 });
-=======
+
 // Connexion à MySQL
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -37,9 +36,9 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
   if (err) {
-    console.error('Erreur de connexion à la base de données MySQL:', err);
+    console.error("Erreur de connexion à la base de données MySQL:", err);
   } else {
-    console.log('Connecté à la base de données MySQL');
+    console.log("Connecté à la base de données MySQL");
   }
 });
 
@@ -49,7 +48,6 @@ app.use((req, res, next) => {
   next();
 });
 
->>>>>>> facd9164fb03adcfb8fd85a4542483f13bcdddff
 // Connexion à MongoDB RATP
 const mongoRATP = mongoose.createConnection(process.env.MONGO_URI_RATP, {
   useNewUrlParser: true,
@@ -78,7 +76,6 @@ mongoSNCF.on("error", (err) => {
   console.error("Erreur de connexion à MongoDB (SNCF) :", err);
 });
 
-<<<<<<< HEAD
 // Middleware pour injecter les connexions MongoDB dans chaque requête
 app.use((req, res, next) => {
   req.mongoRATP = mongoRATP;
@@ -87,12 +84,12 @@ app.use((req, res, next) => {
 });
 
 // Configuration de la connexion à la base de données MySQL
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "pmove",
-});
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "",
+//   database: "pmove",
+// });
 
 // Connexion à la base de données MySQL
 db.connect((err) => {
@@ -122,9 +119,8 @@ redisClient.on("error", (err) => {
   });
 });
 
-=======
 // Configuration de Swagger
->>>>>>> facd9164fb03adcfb8fd85a4542483f13bcdddff
+
 const swaggerOptions = {
   swaggerDefinition: {
     info: {
@@ -149,7 +145,6 @@ app.use("/users", require("./api/users/users")); // Routes pour les utilisateurs
 app.use("/acc", require("./api/acc/accompagnateur"));
 app.use("/ag", require("./api/ag/agent"));
 app.use("/traj", require("./api/traj/trajet")); // Ajoutez cette ligne pour inclure la nouvelle route
-<<<<<<< HEAD
 app.use("/reservation", require("./api/reservation/reservation"));
 
 // Ajoutez cette route pour la racine
@@ -164,10 +159,3 @@ redisClient.on("ready", () => {
     console.log(`Server is running on http://localhost:${port}`);
   });
 });
-=======
-
-
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
->>>>>>> facd9164fb03adcfb8fd85a4542483f13bcdddff
