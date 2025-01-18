@@ -2,6 +2,13 @@ const express = require("express");
 const redis = require("redis");
 const router = express.Router();
 
+/**
+ * @swagger
+ * tags:
+ *   name: Reservation
+ *   description: Reservation
+ */
+
 // Connexion à Redis
 const redisClient = redis.createClient({
   url: "redis://172.20.10.11:6379",
@@ -13,7 +20,45 @@ redisClient.connect().catch(console.error);
 redisClient.on("connect", () => console.log("Connecté à Redis"));
 redisClient.on("error", (err) => console.error("Erreur Redis :", err));
 
-// Route pour ajouter le billet à Redis
+/**
+ * @swagger
+ * /reservation/addToRedis:
+ *   post:
+ *     summary: Add a billet to Redis
+ *     tags: [Reservation]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               billet:
+ *                 type: object
+ *                 properties:
+ *                   num_reservation:
+ *                     type: string
+ *                   lieu_depart:
+ *                     type: string
+ *                   lieu_arrivee:
+ *                     type: string
+ *     responses:
+ *       200:
+ *         description: Billet successfully added to Redis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+  *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Missing billet or required fields
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/addToRedis", async (req, res) => {
   const { billet } = req.body;
 

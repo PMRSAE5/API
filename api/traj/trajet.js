@@ -3,59 +3,108 @@ const router = express.Router();
 const { redisClient } = require("../../config/config");
 const trajetController = require("./trajetController");
 
-// Route pour récupérer les informations de trajet en fonction d'un lieu
-// router.get("/trajet/:lieu", async (req, res) => {
-//   const lieu = req.params.lieu;
-//   console.log(`Received request for lieu: ${lieu}`);
+/**
+ * @swagger
+ * tags:
+ *   name: Trajet
+ *   description: Trajet
+ */
 
-//   try {
-//     // Récupérer toutes les sous-clés de 'Trajet'
-//     const keys = await redisClient.hKeys("Trajet");
-//     if (keys.length === 0) {
-//       return res.status(404).json({ message: "No data found in Redis" });
-//     }
+/**
+ * @swagger
+ * /trajet/{lieu}:
+ *   get:
+ *     summary: Retrieve trajets by lieu
+ *     tags: [Trajet]
+ *     parameters:
+ *       - in: path
+ *         name: lieu
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The lieu to filter trajets
+ *     responses:
+ *       200:
+ *         description: A list of trajets
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       404:
+ *         description: No data found in Redis
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/trajet/:lieu", async (req, res) => {
+  const lieu = req.params.lieu;
+  console.log(`Received request for lieu: ${lieu}`);
 
-//     // Récupérer les données pour chaque sous-clé
-//     const trajets = await Promise.all(
-//       keys.map(async (key) => {
-//         const data = await redisClient.hGet("Trajet", key);
-//         return JSON.parse(data);
-//       })
-//     );
+  try {
+    // Récupérer toutes les sous-clés de 'Trajet'
+    const keys = await redisClient.hKeys("Trajet");
+    if (keys.length === 0) {
+      return res.status(404).json({ message: "No data found in Redis" });
+    }
 
-//     // Filtrer les trajets par lieu de départ ou d'arrivée
-//     const filteredTrajet = trajets
-//       .flatMap((t) => t.trajet)
-//       .filter((t) => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
+    // Récupérer les données pour chaque sous-clé
+    const trajets = await Promise.all(
+      keys.map(async (key) => {
+        const data = await redisClient.hGet("Trajet", key);
+        return JSON.parse(data);
+      })
+    );
 
-//     if (filteredTrajet.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ message: "No trajet found for the specified location" });
-//     }
+    // Filtrer les trajets par lieu de départ ou d'arrivée
+    const filteredTrajet = trajets
+      .flatMap((t) => t.trajet)
+      .filter((t) => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
 
-//     res.json(filteredTrajet);
-//   } catch (error) {
-//     console.error("Error fetching data from Redis:", error);
-//     res.status(500).json({ message: "Internal server error" });
+    if (filteredTrajet.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No trajet found for the specified location" });
+    }
 
-//     // Filtrer les trajets par lieu
-//     const filteredTrajets = trajets.filter(trajet =>
-//       trajet.trajet.some(etape => etape.lieu_depart === lieu || etape.lieu_arrivee === lieu)
-//     );
+    res.json(filteredTrajet);
+  } catch (error) {
+    console.error("Error fetching data from Redis:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
 
-//     if (filteredTrajets.length === 0) {
-//       return res.status(404).json({ message: 'No trajets found for the specified lieu' });
-//     }
-
-//     res.status(200).json(filteredTrajets);
-//   } catch (err) {
-//     console.error('Error retrieving data from Redis:', err);
-//     res.status(500).json({ error: 'Erreur lors de la récupération des données' });
-
-//   }
-// });
-
+/**
+ * @swagger
+ * /trajet/checkReservation:
+ *   post:
+ *     summary: Check a reservation
+ *     tags: [Trajet]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               num_reservation:
+ *                 type: string
+ *               base:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Reservation found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *       400:
+ *         description: Missing fields
+ *       404:
+ *         description: Reservation not found
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/checkReservation", async (req, res) => {
   const { num_reservation, base } = req.body;
 
