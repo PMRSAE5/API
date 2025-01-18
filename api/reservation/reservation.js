@@ -23,26 +23,40 @@ router.post("/addToRedis", async (req, res) => {
       .json({ success: false, message: "Aucun billet fourni" });
   }
 
-  // Vérifier les champs obligatoires du billet
-  const requiredFields = ["num_reservation", "lieu_depart", "lieu_arrivee"];
-  const missingFields = requiredFields.filter((field) => !billet[field]);
-
-  if (missingFields.length > 0) {
-    return res.status(400).json({
-      success: false,
-      message: `Champs manquants : ${missingFields.join(", ")}`,
-    });
-  }
-
   try {
     const billetKey = `billet:${billet.num_reservation}`;
+    const encodedBillet = Buffer.from(
+      JSON.stringify(billet),
+      "utf-8"
+    ).toString(); // Encodage UTF-8
 
-    // Convertir en JSON et enregistrer dans Redis
-    await redisClient.set(billetKey, JSON.stringify(billet));
+    // Enregistrement dans Redis
+    await redisClient.set(billetKey, encodedBillet);
 
     res.json({ success: true, message: "Billet ajouté à Redis" });
   } catch (error) {
     console.error("Erreur lors de l'ajout du billet à Redis :", error);
+    res.status(500).json({ success: false, message: "Erreur serveur" });
+  }
+});
+
+router.get("/getFromRedis/:num_reservation", async (req, res) => {
+  const { num_reservation } = req.params;
+
+  try {
+    const billetKey = `billet:${num_reservation}`;
+    const rawData = await redisClient.get(billetKey);
+
+    if (!rawData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Billet non trouvé" });
+    }
+
+    const decodedData = JSON.parse(Buffer.from(rawData, "utf-8").toString()); // Décodage UTF-8
+    res.json({ success: true, billet: decodedData });
+  } catch (error) {
+    console.error("Erreur lors de la récupération du billet :", error);
     res.status(500).json({ success: false, message: "Erreur serveur" });
   }
 });
