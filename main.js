@@ -1,12 +1,11 @@
 const express = require("express");
 const mysql = require("mysql2"); // Utilisez mysql2
-const { createClient } = require("redis");
 const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const mongoose = require("mongoose");
 const cors = require("cors"); // Import du middleware CORS
 require("dotenv").config(); // Charge les variables d'environnement depuis .env;
-
+const { createClient } = require("redis");
 const app = express();
 const port = process.env.PORT || 3000;
 

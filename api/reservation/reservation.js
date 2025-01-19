@@ -1,5 +1,5 @@
 const express = require("express");
-const redis = require("redis");
+const { createClient } = require("redis");
 const router = express.Router();
 
 /**
