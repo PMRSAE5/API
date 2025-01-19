@@ -84,24 +84,6 @@ app.use((req, res, next) => {
 });
 
 // Configuration de la connexion à la base de données MySQL
-// const db = mysql.createConnection({
-//   host: "localhost",
-//   user: "root",
-//   password: "",
-//   database: "pmove",
-// });
-
-// Connexion à la base de données MySQL
-db.connect((err) => {
-  if (err) {
-    console.error("Erreur de connexion à la base de données:", err);
-    return;
-  }
-  console.log("Connecté à la base de données MySQL");
-
-  console.error("Erreur de connexion à la base de données:", err);
-  return;
-}, console.log("Connecté à la base de données MySQL"));
 
 // Configuration Redis
 const redisClient = createClient({
