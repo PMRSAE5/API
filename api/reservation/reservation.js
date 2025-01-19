@@ -10,9 +10,9 @@ const router = express.Router();
  */
 
 // Connexion à Redis
-const redisClient = redis.createClient({
-  url: "redis://172.20.10.11:6379",
-  password: "kaka",
+const redisClient = createClient({
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  password: process.env.REDIS_PASSWORD,
 });
 
 redisClient.connect().catch(console.error);
@@ -49,7 +49,7 @@ redisClient.on("error", (err) => console.error("Erreur Redis :", err));
  *           application/json:
  *             schema:
  *               type: object
-  *               properties:
+ *               properties:
  *                 success:
  *                   type: boolean
  *                 message:
