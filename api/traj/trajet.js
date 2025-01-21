@@ -38,7 +38,8 @@ const trajetController = require("./trajetController");
  *         description: Internal server error
  */
 router.get("/trajet/:lieu", async (req, res) => {
-  const lieu = req.params.lieu;
+  const lieu = req.params.lieu.toLowerCase(); // attention --> gérer format en minuscules
+  const currentDate = new Date().toISOString().split("T")[0]; // attention --> format YYYY-MM-DD
   console.log(`Received request for lieu: ${lieu}`);
 
   try {
@@ -56,18 +57,22 @@ router.get("/trajet/:lieu", async (req, res) => {
       })
     );
 
-    // Filtrer les trajets par lieu de départ ou d'arrivée
+    // Filtrer les trajets par lieu de départ ou d'arrivée et par date
     const filteredTrajet = trajets
       .flatMap((t) => t.trajet)
-      .filter((t) => t.lieu_depart === lieu || t.lieu_arrivee === lieu);
+      .filter((t) =>
+        (t.lieu_depart.toLowerCase() === lieu || t.lieu_arrivee.toLowerCase() === lieu) &&
+        t.heure_depart.startsWith(currentDate)
+      );      
 
     if (filteredTrajet.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No trajet found for the specified location" });
+      return res.status(404).json({
+        message: "No trajet found for the specified location and date",
+      });
     }
-
     res.json(filteredTrajet);
+    console.log("Filtered trajets:", filteredTrajet);
+
   } catch (error) {
     console.error("Error fetching data from Redis:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -152,6 +157,70 @@ router.post("/checkReservation", async (req, res) => {
   } catch (error) {
     console.error("Erreur lors de la vérification de la réservation :", error);
     res.status(500).json({ message: "Erreur interne du serveur.", error });
+  }
+});
+
+// Endpoint pour accepter/refuser un trajet (à travailler encore)
+router.post("/trajet/:id/decision", async (req, res) => {
+  const { id } = req.params;
+  const { decision } = req.body; // "accept" ou "reject"
+
+  try {
+    const data = await redisClient.hGet("Trajet", id);
+    if (!data) {
+      return res.status(404).json({ message: "Trajet not found" });
+    }
+
+    const trajet = JSON.parse(data);
+    trajet.status = decision === "accept" ? "accepted" : "rejected";
+
+    await redisClient.hSet("Trajet", id, JSON.stringify(trajet));
+    res.status(200).json({ message: `Trajet ${decision}ed successfully` });
+  } catch (error) {
+    console.error("Error updating trajet:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+
+// Endpoint pour récupérer les trajets du jour pour les afficher dans un composant (non fonctionnel pour le moment)
+router.get("/trajet/today", async (req, res) => {
+  const currentDate = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
+  console.log(`Fetching all trajets for date: ${currentDate}`);
+
+  try {
+    // Récupérer toutes les sous-clés de 'Trajet'
+    const keys = await redisClient.hKeys("Trajet");
+    if (keys.length === 0) {
+      return res.status(404).json({ message: "No data found in Redis" });
+    }
+
+    // Récupérer les données pour chaque sous-clé
+    const trajets = await Promise.all(
+      keys.map(async (key) => {
+        const data = await redisClient.hGet("Trajet", key);
+        return JSON.parse(data); // Parsez les données JSON stockées
+      })
+    );
+
+    // Extraire et filtrer les trajets du jour
+    const filteredTrajets = trajets
+      .flatMap((t) => t.trajet) // Extraire les trajets depuis chaque objet
+      .filter((t) => {
+        // Vérifier si la date de départ correspond à la date actuelle
+        const trajetDate = t.heure_depart.split("T")[0];
+        return trajetDate === currentDate;
+      });
+
+    // Vérifier si des trajets sont trouvés
+    if (filteredTrajets.length === 0) {
+      return res.status(404).json({ message: "No trajets found for today" });
+    }
+
+    // Retourner les trajets filtrés
+    res.json(filteredTrajets);
+  } catch (error) {
+    console.error("Error fetching today's trajets from Redis:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 });
 
