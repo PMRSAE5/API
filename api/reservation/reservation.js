@@ -85,24 +85,50 @@ router.post("/addToRedis", async (req, res) => {
   }
 });
 
-router.get("/getFromRedis/:num_reservation", async (req, res) => {
-  const { num_reservation } = req.params;
+router.get("/getTickets", async (req, res) => {
+  const { name, surname } = req.query;
+
+  if (!name || !surname) {
+    return res.status(400).json({
+      success: false,
+      message: "Le nom et le prénom sont requis.",
+    });
+  }
 
   try {
-    const billetKey = `billet:${num_reservation}`;
-    const rawData = await redisClient.get(billetKey);
+    // Rechercher tous les billets
+    const keys = await redisClient.keys("billet:*");
 
-    if (!rawData) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Billet non trouvé" });
+    const billets = [];
+    for (const key of keys) {
+      const data = await redisClient.get(key);
+      const billet = JSON.parse(data);
+
+      if (
+        billet.name.toLowerCase() === name.toLowerCase() &&
+        billet.surname.toLowerCase() === surname.toLowerCase()
+      ) {
+        billets.push(billet);
+      }
     }
 
-    const decodedData = JSON.parse(Buffer.from(rawData, "utf-8").toString()); // Décodage UTF-8
-    res.json({ success: true, billet: decodedData });
+    if (billets.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Aucun billet trouvé pour cet utilisateur.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      billets,
+    });
   } catch (error) {
-    console.error("Erreur lors de la récupération du billet :", error);
-    res.status(500).json({ success: false, message: "Erreur serveur" });
+    console.error("Erreur lors de la récupération des billets :", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur serveur.",
+    });
   }
 });
 
