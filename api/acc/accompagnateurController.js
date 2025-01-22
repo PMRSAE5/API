@@ -32,7 +32,7 @@ const AddAccompagnateur = (
 
 module.exports = {
   AddAccompagnateur,
-  GetAccompagnateurById,
-  GetAccompagnateurByMail,
-  GetAccompagnateurByNum,
+  // GetAccompagnateurById,
+  // GetAccompagnateurByMail,
+  // GetAccompagnateurByNum,
 };

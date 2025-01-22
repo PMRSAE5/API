@@ -9,6 +9,7 @@ const { createClient } = require("redis");
 const app = express();
 const port = process.env.PORT || 3000;
 
+
 app.use(
   cors({
     origin: "*", // Autorise uniquement votre frontend

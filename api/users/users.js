@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const UsersController = require("./usersController");
+const { v4: uuidv4 } = require("uuid");
+const { redisClient } = require("../../config/config");
 
 /**
  * @swagger
@@ -255,7 +257,7 @@ router.post("/userLog", (req, res) => {
   UsersController.LoginUser(
     req.connexion,
     { mail, password },
-    (err, results) => {
+    async (err, results) => {
       if (err) {
         console.error("Erreur SQL :", err);
         return res
@@ -272,14 +274,21 @@ router.post("/userLog", (req, res) => {
         return res.status(500).json({ error: "Données utilisateur non valides." });
       }
 
-      // Assurez-vous que req.session existe avant de l'utiliser
-      if (!req.session) {
-        req.session = {};
+      // Générer un token
+      const token = uuidv4();
+
+      // Stocker le token et l'ID dans Redis
+      try {
+        await redisClient.set(`user:${token}`, JSON.stringify({ userId: user.ID_Client, mail: user.mail }), {
+          EX: 3600, // Expire après 1 heure
+        });
+      } catch (redisErr) {
+        console.error("Erreur lors de l'enregistrement dans Redis :", redisErr);
+        return res.status(500).json({ error: "Erreur interne lors de la connexion." });
       }
 
-      req.session.user = user;
       console.log("Utilisateur trouvé :", user);
-      return res.status(200).json({ message: "Connexion réussie", user });
+      return res.status(200).json({ message: "Connexion réussie", user, token });
     }
   );
 });
@@ -303,20 +312,41 @@ router.post("/userLog", (req, res) => {
  *       500:
  *         description: Error logging out
  */
-router.post("/logout", (req, res) => {
-  if (!req.session) {
-    return res.status(400).json({ error: "Aucune session active." });
+router.post("/logout", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token manquant." });
   }
 
-  req.session.destroy((err) => {
-    if (err) {
-      console.error("Erreur lors de la déconnexion :", err);
-      return res.status(500).json({ error: "Erreur lors de la déconnexion." });
+  try {
+    await redisClient.del(`user:${token}`);
+    return res.status(200).json({ message: "Déconnexion réussie." });
+  } catch (err) {
+    console.error("Erreur lors de la déconnexion :", err);
+    return res.status(500).json({ error: "Erreur lors de la déconnexion." });
+  }
+});
+
+router.post("/validateToken", async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token manquant." });
+  }
+
+  try {
+    const userData = await redisClient.get(`user:${token}`);
+    if (!userData) {
+      return res.status(401).json({ error: "Token invalide ou expiré." });
     }
 
-    res.clearCookie("connect.sid"); // Supprime le cookie de session (si utilisé)
-    return res.status(200).json({ message: "Déconnexion réussie." });
-  });
+    const user = JSON.parse(userData);
+    return res.status(200).json({ message: "Token valide", user });
+  } catch (err) {
+    console.error("Erreur lors de la validation du token :", err);
+    return res.status(500).json({ error: "Erreur interne lors de la validation du token." });
+  }
 });
 
 router.get("/me", (req, res) => {
