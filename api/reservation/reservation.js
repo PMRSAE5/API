@@ -132,6 +132,48 @@ router.get("/getTickets", async (req, res) => {
   }
 });
 
+router.delete("/deleteFromRedis", async (req, res) => {
+  console.log("Requête reçue pour suppression :", req.body);
+
+  const { num_reservation } = req.body;
+
+  if (!num_reservation) {
+    console.log("Numéro de réservation manquant");
+    return res
+      .status(400)
+      .json({
+        success: false,
+        message: "Le numéro de réservation est requis.",
+      });
+  }
+
+  try {
+    const billetKey = `billet:${num_reservation}`;
+    const result = await redisClient.del(billetKey);
+
+    console.log("Résultat de suppression Redis :", result);
+
+    if (result === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Aucun billet trouvé avec ce numéro de réservation.",
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Billet supprimé de Redis avec succès.",
+    });
+  } catch (error) {
+    console.error("Erreur lors de la suppression de Redis :", error);
+    res.status(500).json({
+      success: false,
+      message: "Erreur serveur lors de la suppression du billet.",
+    });
+  }
+});
+
+
 
 /**
  * @swagger
@@ -258,7 +300,6 @@ router.get("/getById", async (req, res) => {
     res.status(500).json({ success: false, message: "Erreur serveur." });
   }
 });
-
 
 // Fermer la connexion Redis proprement si nécessaire (optionnel)
 process.on("SIGINT", async () => {
