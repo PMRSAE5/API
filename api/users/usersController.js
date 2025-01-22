@@ -1,5 +1,3 @@
-const connexion = require("../../config/config");
-
 // Rechercher un client par ID
 const GetClientById = (connexion, { id }, callback) => {
   const query = "SELECT * FROM Client WHERE ID_Client = ?";

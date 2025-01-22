@@ -16,6 +16,7 @@ app.use(
     credentials: true, // Si vous utilisez des cookies ou des headers d'autorisation
   })
 );
+
 // Middleware pour parser le corps des requêtes HTTP
 app.use(express.json());
 

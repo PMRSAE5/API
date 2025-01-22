@@ -29,7 +29,7 @@ const { AddAccompagnateur } = require("./accompagnateurController");
  */
 router.get("/", (req, res) => {
   // Logique pour récupérer les accompagnateurs
-  res.status(500).json({ error: "Erreur lors de la récupération des données" });
+  res.status(500).json({ error: "Route accompagnateur" });
 });
 
 /**
@@ -69,18 +69,18 @@ router.get("/", (req, res) => {
  *         description: Erreur lors de l'insertion des données
  */
 router.post("/accAdd", (req, res) => {
-  const { name_acc, surname_acc, num_acc, mail_acc } = req.body;
-  AddAccompagnateur(
+  const { name_acc, surname_acc, num_acc, mail_acc } = req.body; // Récupération des données
+  AddAccompagnateur( // On appelle la méthode AddAccompagnateur dans AccompagnateurController
     req.connexion,
-    { name_acc, surname_acc, num_acc, mail_acc },
+    { name_acc, surname_acc, num_acc, mail_acc }, // On fournit les données à la méthode
     (err, result) => {
-      if (err) {
+      if (err) { // En cas d'erreur
         res
           .status(500)
           .json({ error: "Erreur lors de l'insertion des données" });
         return;
       }
-      res
+      res // En cas de succès
         .status(201)
         .json({
           message: "Accompagnateur ajouté avec succès",

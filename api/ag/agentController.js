@@ -1,7 +1,9 @@
 const connexion = require("../../config/config");
 
+
 const getAgentByName = async (connexion, name) => {
     try {
+        // Récupérer les informations d'un agent par son nom
         const [rows] = await connexion.promise().execute('SELECT * FROM Agent WHERE name = ?', [name]);
         return rows;
     } catch (error) {

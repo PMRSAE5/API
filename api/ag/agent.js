@@ -66,21 +66,19 @@ router.get("/", (req, res) => {
  *         description: Internal server error
  */
 router.post("/login", async (req, res) => {
-    const { name, password } = req.body;
+    const { name, password } = req.body; // On récupère le nom et le mot de passe de l'agent
 
     try {
-        console.log(`Received login request for name: ${name}`);
-
+        // On vérifie si l'agent existe
         const rows = await getAgentByName(req.connexion, name);
         if (rows.length === 0) {
-            console.log('No agent found with the given name');
-            return res.status(401).json({ message: "Nom ou mot de passe invalide" });
+            return res.status(401).json({ message: "Nom ou mot de passe invalide" }); // On renvoie une erreur si l'agent n'existe pas
         }
 
-        const agent = rows[0];
-        const isPasswordValid = comparePassword(password, agent.password);
-        if (!isPasswordValid) {
-            console.log('Invalid password');
+        const agent = rows[0]; 
+
+        const isPasswordValid = comparePassword(password, agent.password); // On compare le mot de passe fourni avec le mot de passe de l'agent
+        if (!isPasswordValid) { // Si le mot de passe est invalide
             return res.status(401).json({ message: "Nom ou mot de passe invalide" });
         }
 
@@ -115,8 +113,8 @@ router.post("/login", async (req, res) => {
  *         description: Error retrieving data
  */
 router.get("/agentId/:name", (req, res) => {
-    const { name } = req.params;
-    GetIdAgentByName(req.connexion, name, (err, rows) => {
+    const { name } = req.params; // On récupère le nom de l'agent
+    GetIdAgentByName(req.connexion, name, (err, rows) => { // On récupère l'ID de l'agent par le nom
         if (err) {
             res.status(500).json({ error: "Erreur lors de la récupération des données" });
             return;

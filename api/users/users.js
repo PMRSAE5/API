@@ -250,6 +250,7 @@ router.put("/update", (req, res) => {
  */
 router.post("/userLog", (req, res) => {
   const { mail, password } = req.body;
+  console.log("Requête de connexion reçue avec :", { mail, password });
 
   UsersController.LoginUser(
     req.connexion,
@@ -267,6 +268,16 @@ router.post("/userLog", (req, res) => {
       }
 
       const user = results[0];
+      if (!user) {
+        return res.status(500).json({ error: "Données utilisateur non valides." });
+      }
+
+      // Assurez-vous que req.session existe avant de l'utiliser
+      if (!req.session) {
+        req.session = {};
+      }
+
+      req.session.user = user;
       console.log("Utilisateur trouvé :", user);
       return res.status(200).json({ message: "Connexion réussie", user });
     }
@@ -293,6 +304,10 @@ router.post("/userLog", (req, res) => {
  *         description: Error logging out
  */
 router.post("/logout", (req, res) => {
+  if (!req.session) {
+    return res.status(400).json({ error: "Aucune session active." });
+  }
+
   req.session.destroy((err) => {
     if (err) {
       console.error("Erreur lors de la déconnexion :", err);
@@ -305,7 +320,7 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", (req, res) => {
-  if (req.session.user) {
+  if (req.session && req.session.user) {
     res.status(200).json({ user: req.session.user });
   } else {
     res.status(401).json({ error: "Utilisateur non connecté" });
