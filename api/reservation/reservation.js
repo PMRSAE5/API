@@ -1,6 +1,8 @@
 const express = require("express");
 const { createClient } = require("redis");
 const router = express.Router();
+const nodemailer = require("nodemailer");
+const { sendConfirmationEmail } = require("./mailler");
 
 /**
  * @swagger
@@ -60,28 +62,46 @@ redisClient.on("error", (err) => console.error("Erreur Redis :", err));
  *         description: Internal server error
  */
 router.post("/addToRedis", async (req, res) => {
-  const { billet } = req.body;
+  const { billet, email } = req.body;
 
-  if (!billet) {
+  console.log("=== Requête reçue pour ajouter dans Redis ===");
+  console.log("Données du billet :", billet);
+  console.log("Email cible :", email);
+
+  if (!billet || !email) {
+    console.error("Données manquantes : billet ou email.");
     return res
       .status(400)
-      .json({ success: false, message: "Aucun billet fourni" });
+      .json({ success: false, message: "Billet et email requis." });
   }
 
   try {
     const billetKey = `billet:${billet.num_reservation}`;
-    const encodedBillet = Buffer.from(
-      JSON.stringify(billet),
-      "utf-8"
-    ).toString(); // Encodage UTF-8
+    await redisClient.set(billetKey, JSON.stringify(billet));
+    console.log("Billet enregistré dans Redis :", billetKey);
 
-    // Enregistrement dans Redis
-    await redisClient.set(billetKey, encodedBillet);
+    // Envoi de l'email
+    const subject = "Confirmation de réservation";
+    const message = `
+      Votre réservation pour le trajet ${billet.lieu_depart} - ${billet.lieu_arrivee} a bien été enregistrée.
+      Numéro de réservation : ${billet.num_reservation}.
+    `;
 
-    res.json({ success: true, message: "Billet ajouté à Redis" });
+    await sendConfirmationEmail({ name: billet.name, email, subject, message });
+    console.log("E-mail de confirmation envoyé à :", email);
+
+    res.json({
+      success: true,
+      message: "Billet ajouté à Redis et e-mail envoyé.",
+    });
   } catch (error) {
-    console.error("Erreur lors de l'ajout du billet à Redis :", error);
-    res.status(500).json({ success: false, message: "Erreur serveur" });
+    console.error("Erreur dans la route /addToRedis :", error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Erreur lors du traitement de la réservation.",
+      });
   }
 });
 
@@ -139,12 +159,10 @@ router.delete("/deleteFromRedis", async (req, res) => {
 
   if (!num_reservation) {
     console.log("Numéro de réservation manquant");
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: "Le numéro de réservation est requis.",
-      });
+    return res.status(400).json({
+      success: false,
+      message: "Le numéro de réservation est requis.",
+    });
   }
 
   try {
