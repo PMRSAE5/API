@@ -66,19 +66,23 @@ router.get("/", (req, res) => {
  *         description: Internal server error
  */
 router.post("/login", async (req, res) => {
+    console.log("Login request received:", req.body);
     const { name, password } = req.body; // On récupère le nom et le mot de passe de l'agent
 
     try {
         // On vérifie si l'agent existe
         const rows = await getAgentByName(req.connexion, name);
         if (rows.length === 0) {
+            console.log("Agent not found");
             return res.status(401).json({ message: "Nom ou mot de passe invalide" }); // On renvoie une erreur si l'agent n'existe pas
         }
 
-        const agent = rows[0]; 
+        const agent = rows[0];
+        console.log("Agent found:", agent);
 
         const isPasswordValid = comparePassword(password, agent.password); // On compare le mot de passe fourni avec le mot de passe de l'agent
         if (!isPasswordValid) { // Si le mot de passe est invalide
+            console.log("Invalid password");
             return res.status(401).json({ message: "Nom ou mot de passe invalide" });
         }
 
