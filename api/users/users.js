@@ -3,6 +3,7 @@ const router = express.Router();
 const UsersController = require("./usersController");
 const { v4: uuidv4 } = require("uuid");
 const { redisClient } = require("../../config/config");
+const { connexion } = require("../../config/config");
 
 /**
  * @swagger
@@ -150,6 +151,10 @@ router.post("/userAdd", (req, res) => {
   });
 });
 
+router.get("/test", (req, res) => {
+  res.status(200).json({ message: "API fonctionnelle" });
+});
+
 /**
  * @swagger
  * /users/update:
@@ -271,7 +276,9 @@ router.post("/userLog", (req, res) => {
 
       const user = results[0];
       if (!user) {
-        return res.status(500).json({ error: "Données utilisateur non valides." });
+        return res
+          .status(500)
+          .json({ error: "Données utilisateur non valides." });
       }
 
       // Générer un token
@@ -279,16 +286,24 @@ router.post("/userLog", (req, res) => {
 
       // Stocker le token et l'ID dans Redis
       try {
-        await redisClient.set(`user:${token}`, JSON.stringify({ userId: user.ID_Client, mail: user.mail }), {
-          EX: 3600, // Expire après 1 heure
-        });
+        await redisClient.set(
+          `user:${token}`,
+          JSON.stringify({ userId: user.ID_Client, mail: user.mail }),
+          {
+            EX: 3600, // Expire après 1 heure
+          }
+        );
       } catch (redisErr) {
         console.error("Erreur lors de l'enregistrement dans Redis :", redisErr);
-        return res.status(500).json({ error: "Erreur interne lors de la connexion." });
+        return res
+          .status(500)
+          .json({ error: "Erreur interne lors de la connexion." });
       }
 
       console.log("Utilisateur trouvé :", user);
-      return res.status(200).json({ message: "Connexion réussie", user, token });
+      return res
+        .status(200)
+        .json({ message: "Connexion réussie", user, token });
     }
   );
 });
@@ -345,7 +360,9 @@ router.post("/validateToken", async (req, res) => {
     return res.status(200).json({ message: "Token valide", user });
   } catch (err) {
     console.error("Erreur lors de la validation du token :", err);
-    return res.status(500).json({ error: "Erreur interne lors de la validation du token." });
+    return res
+      .status(500)
+      .json({ error: "Erreur interne lors de la validation du token." });
   }
 });
 

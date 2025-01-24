@@ -96,12 +96,10 @@ router.post("/addToRedis", async (req, res) => {
     });
   } catch (error) {
     console.error("Erreur dans la route /addToRedis :", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Erreur lors du traitement de la réservation.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors du traitement de la réservation.",
+    });
   }
 });
 
@@ -191,8 +189,6 @@ router.delete("/deleteFromRedis", async (req, res) => {
   }
 });
 
-
-
 /**
  * @swagger
  * /reservation/getByPoint:
@@ -244,7 +240,9 @@ router.get("/getByPoint", async (req, res) => {
   const { pmr_point_id } = req.query;
 
   if (!pmr_point_id) {
-    return res.status(400).json({ success: false, message: "Paramètre pmr_point_id manquant." });
+    return res
+      .status(400)
+      .json({ success: false, message: "Paramètre pmr_point_id manquant." });
   }
 
   try {
@@ -262,7 +260,10 @@ router.get("/getByPoint", async (req, res) => {
       console.log("Données Redis pour la clé", key, ":", billet); // Log des données Redis
 
       // Normalisation des données pour la comparaison
-      if (billet.lieu_depart.trim().toLowerCase() === pmr_point_id.trim().toLowerCase()) {
+      if (
+        billet.lieu_depart.trim().toLowerCase() ===
+        pmr_point_id.trim().toLowerCase()
+      ) {
         reservations.push({
           id: billet.num_reservation,
           client_name: billet.name,
@@ -281,7 +282,10 @@ router.get("/getByPoint", async (req, res) => {
     console.log("Réservations filtrées :", reservations); // Log des réservations filtrées
 
     if (reservations.length === 0) {
-      return res.status(404).json({ success: false, message: "Aucune réservation trouvée pour ce point." });
+      return res.status(404).json({
+        success: false,
+        message: "Aucune réservation trouvée pour ce point.",
+      });
     }
 
     res.status(200).json(reservations);
@@ -291,12 +295,13 @@ router.get("/getByPoint", async (req, res) => {
   }
 });
 
-
 router.get("/getById", async (req, res) => {
   const { id } = req.query;
 
   if (!id) {
-    return res.status(400).json({ success: false, message: "Paramètre id manquant." });
+    return res
+      .status(400)
+      .json({ success: false, message: "Paramètre id manquant." });
   }
 
   try {
@@ -305,7 +310,10 @@ router.get("/getById", async (req, res) => {
     const data = await redisClient.get(billetKey);
 
     if (!data) {
-      return res.status(404).json({ success: false, message: "Aucune réservation trouvée pour cet ID." });
+      return res.status(404).json({
+        success: false,
+        message: "Aucune réservation trouvée pour cet ID.",
+      });
     }
 
     const billet = JSON.parse(data); // Convertir les données en objet JSON

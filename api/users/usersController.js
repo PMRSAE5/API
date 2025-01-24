@@ -10,9 +10,13 @@ const GetClientByMail = (connexion, { mail }, callback) => {
   connexion.query(query, [mail], callback);
 };
 
-// Ajouter un nouveau client
-const AddClient = (
-  {
+const AddClient = (connexion, data, callback) => {
+  if (!data) {
+    console.error("Données manquantes !");
+    return callback(new Error("Les données sont manquantes ou mal formées."));
+  }
+
+  const {
     name,
     surname,
     num,
@@ -24,9 +28,8 @@ const AddClient = (
     contact_mail,
     contact_num,
     note,
-  },
-  callback
-) => {
+  } = data;
+
   const query = `
     INSERT INTO Client (name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
