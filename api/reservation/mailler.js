@@ -3,12 +3,12 @@ const nodemailer = require("nodemailer");
 // Fonction pour envoyer l'email
 const sendConfirmationEmail = async ({ name, email, subject, message }) => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com", // Utilise Gmail comme service
-    port: 587, // Port standard pour le SMTP avec STARTTLS
-    secure: false, // Utilise STARTTLS
+    host: "smtp.gmail.com",
+    port: 587,
+    secure: false,
     auth: {
-      user: "kaisdilmi2003@gmail.com", // Remplace par ton email Gmail
-      pass: "gdnksswmlhednufc",
+      user: "pmove213@gmail.com", // Remplace par ton email Gmail
+      pass: "edmajzchjelwyjex",
     },
   });
 
