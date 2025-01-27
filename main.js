@@ -4,11 +4,11 @@ const swaggerJsdoc = require("swagger-jsdoc");
 const swaggerUi = require("swagger-ui-express");
 const mongoose = require("mongoose");
 const cors = require("cors"); // Import du middleware CORS
-require("dotenv").config(); // Charge les variables d'environnement depuis .env;
-const { createClient } = require("redis");
+require("dotenv").config(); // Charge les variables d'environnement depuis .env
+const { driver, mysqlConnexion } = require("./config/config");
+
 const app = express();
 const port = process.env.PORT || 3000;
-
 
 app.use(
   cors({
@@ -18,34 +18,10 @@ app.use(
   })
 );
 
-// Middleware pour parser le corps des requêtes HTTP
 app.use(express.json());
 
 app.use((req, res, next) => {
   res.setHeader("Content-Type", "application/json; charset=utf-8");
-  next();
-});
-
-// Connexion à MySQL
-const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-});
-
-db.connect((err) => {
-  if (err) {
-    console.error("Erreur de connexion à la base de données MySQL:", err);
-  } else {
-    console.log("Connecté à la base de données MySQL");
-  }
-});
-
-// Middleware pour ajouter la connexion MySQL à chaque requête
-app.use((req, res, next) => {
-  req.connexion = db; // Ajout de la connexion MySQL dans l'objet `req`
   next();
 });
 
@@ -84,26 +60,14 @@ app.use((req, res, next) => {
   next();
 });
 
-// Configuration de la connexion à la base de données MySQL
-
-// Configuration Redis
-const redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-  password: process.env.REDIS_PASSWORD,
-});
-
-redisClient.connect().catch(console.error);
-
-redisClient.on("error", (err) => {
-  console.error("Redis error:", err);
-
-  redisClient.on("error", (err) => {
-    console.error("Redis error:", err);
-  });
+// Middleware pour injecter la connexion MySQL et Neo4j dans chaque requête
+app.use((req, res, next) => {
+  req.mysqlConnexion = mysqlConnexion;
+  req.neo4jDriver = driver;
+  next();
 });
 
 // Configuration de Swagger
-
 const swaggerOptions = {
   swaggerDefinition: {
     info: {
@@ -117,28 +81,26 @@ const swaggerOptions = {
       },
     ],
   },
-  apis: ["./api/**/*.js"], // Chemin vers vos fichiers d'API
+  apis: ["./api/**/*.js"],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Import des routes
-app.use("/users", require("./api/users/users")); // Routes pour les utilisateurs
+app.use("/users", require("./api/users/users"));
 app.use("/acc", require("./api/acc/accompagnateur"));
 app.use("/ag", require("./api/ag/agent"));
-app.use("/traj", require("./api/traj/trajet")); // Ajoutez cette ligne pour inclure la nouvelle route
-app.use("/reservation", require("./api/reservation/reservation"));
+// app.use("/traj", require("./api/traj/trajet"));
+// app.use("/reservation", require("./api/reservation/reservation"));
+app.use("/analyse", require("./api/analyse/analyse"));
 
-// Ajoutez cette route pour la racine
+// Route de base
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-// Démarrage du serveur après la connexion à Redis
-redisClient.on("ready", () => {
-  console.log("Redis client connected");
-  app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-  });
+// Démarrage du serveur
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
 });

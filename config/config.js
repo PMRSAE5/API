@@ -1,6 +1,6 @@
 const mysql = require("mysql2/promise");
-const { createClient } = require("redis");
 require("dotenv").config();
+const neo4j = require('neo4j-driver');
 
 const mysqlConnexion = mysql.createPool({
   host: process.env.DB_HOST,
@@ -12,21 +12,12 @@ const mysqlConnexion = mysql.createPool({
   queueLimit: 0,
 });
 
-// Configuration Redis
-const redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
-  password: process.env.REDIS_PASSWORD,
-});
-
-redisClient.connect().catch(console.error);
-
-redisClient.on("error", (err) => {
-  console.error("Redis error:", err);
-});
+const driver = neo4j.driver(
+  'neo4j://localhost',
+  neo4j.auth.basic(process.env.NEO4J_USER, process.env.NEO4J_PASSWORD)
+);
 
 module.exports = {
   mysqlConnexion,
-  redisClient,
+  driver
 };
-
-mysqlConnexion, redisClient;
