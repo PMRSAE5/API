@@ -60,10 +60,12 @@ router.get("/trajet/:lieu", async (req, res) => {
     // Filtrer les trajets par lieu de départ ou d'arrivée et par date
     const filteredTrajet = trajets
       .flatMap((t) => t.trajet)
-      .filter((t) =>
-        (t.lieu_depart.toLowerCase() === lieu || t.lieu_arrivee.toLowerCase() === lieu) &&
-        t.heure_depart.startsWith(currentDate)
-      );      
+      .filter(
+        (t) =>
+          (t.lieu_depart.toLowerCase() === lieu ||
+            t.lieu_arrivee.toLowerCase() === lieu) &&
+          t.heure_depart.startsWith(currentDate)
+      );
 
     if (filteredTrajet.length === 0) {
       return res.status(404).json({
@@ -72,7 +74,6 @@ router.get("/trajet/:lieu", async (req, res) => {
     }
     res.json(filteredTrajet);
     console.log("Filtered trajets:", filteredTrajet);
-
   } catch (error) {
     console.error("Error fetching data from Redis:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -130,6 +131,8 @@ router.post("/checkReservation", async (req, res) => {
         ? req.mongoRATP
         : base.toLowerCase() === "sncf"
         ? req.mongoSNCF
+        : base.toLowerCase() === "airfrance"
+        ? req.mongoAirFrance
         : null;
 
     if (!db) {
@@ -160,7 +163,63 @@ router.post("/checkReservation", async (req, res) => {
   }
 });
 
-// Endpoint pour accepter/refuser un trajet (à travailler encore)
+/**
+ * @swagger
+ * /trajet/{id}/decision:
+ *   post:
+ *     summary: Accepter ou refuser un trajet
+ *     tags: [Trajet]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID du trajet
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               decision:
+ *                 type: string
+ *                 enum: [accept, reject]
+ *                 description: Décision à prendre pour le trajet
+ *     responses:
+ *       200:
+ *         description: Trajet mis à jour avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Trajet accepted successfully
+ *       404:
+ *         description: Trajet non trouvé
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Trajet not found
+ *       500:
+ *         description: Erreur interne du serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
 router.post("/trajet/:id/decision", async (req, res) => {
   const { id } = req.params;
   const { decision } = req.body; // "accept" ou "reject"
@@ -182,7 +241,52 @@ router.post("/trajet/:id/decision", async (req, res) => {
   }
 });
 
-// Endpoint pour récupérer les trajets du jour pour les afficher dans un composant (non fonctionnel pour le moment)
+/**
+ * @swagger
+ * /trajet/today:
+ *   get:
+ *     summary: Récupérer les trajets du jour
+ *     tags: [Trajet]
+ *     responses:
+ *       200:
+ *         description: Liste des trajets du jour
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: string
+ *                   heure_depart:
+ *                     type: string
+ *                   destination:
+ *                     type: string
+ *                   status:
+ *                     type: string
+ *       404:
+ *         description: Aucun trajet trouvé pour aujourd'hui
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: No trajets found for today
+ *       500:
+ *         description: Erreur interne du serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
 router.get("/trajet/today", async (req, res) => {
   const currentDate = new Date().toISOString().split("T")[0]; // Format YYYY-MM-DD
   console.log(`Fetching all trajets for date: ${currentDate}`);

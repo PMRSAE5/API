@@ -103,6 +103,88 @@ router.post("/addToRedis", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /getTickets:
+ *   get:
+ *     summary: Récupérer les billets d'un utilisateur
+ *     tags: [Reservation]
+ *     parameters:
+ *       - in: query
+ *         name: name
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Nom de l'utilisateur
+ *       - in: query
+ *         name: surname
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Prénom de l'utilisateur
+ *     responses:
+ *       200:
+ *         description: Liste des billets de l'utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 billets:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       name:
+ *                         type: string
+ *                       surname:
+ *                         type: string
+ *                       otherProperties:
+ *                         type: string
+ *       400:
+ *         description: Nom et prénom requis
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Le nom et le prénom sont requis.
+ *       404:
+ *         description: Aucun billet trouvé pour cet utilisateur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Aucun billet trouvé pour cet utilisateur.
+ *       500:
+ *         description: Erreur serveur
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Erreur serveur.
+ */
+
 router.get("/getTickets", async (req, res) => {
   const { name, surname } = req.query;
 
@@ -149,6 +231,77 @@ router.get("/getTickets", async (req, res) => {
     });
   }
 });
+
+/**
+ * @swagger
+ * /deleteFromRedis:
+ *   delete:
+ *     summary: Supprimer un billet de Redis
+ *     tags: [Reservation]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               num_reservation:
+ *                 type: string
+ *                 description: Numéro de réservation du billet
+ *     responses:
+ *       200:
+ *         description: Billet supprimé de Redis avec succès
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Billet supprimé de Redis avec succès.
+ *       400:
+ *         description: Numéro de réservation manquant
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Le numéro de réservation est requis.
+ *       404:
+ *         description: Aucun billet trouvé avec ce numéro de réservation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Aucun billet trouvé avec ce numéro de réservation.
+ *       500:
+ *         description: Erreur serveur lors de la suppression du billet
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Erreur serveur lors de la suppression du billet.
+ */
 
 router.delete("/deleteFromRedis", async (req, res) => {
   console.log("Requête reçue pour suppression :", req.body);

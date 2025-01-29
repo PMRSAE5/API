@@ -54,18 +54,27 @@ const mongoRATP = mongoose.createConnection(process.env.MONGO_URI_RATP, {
   useUnifiedTopology: true,
 });
 
+// Connexion à MongoDB SNCF
+const mongoSNCF = mongoose.createConnection(process.env.MONGO_URI_SNCF, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Connexion à MongoDB SNCF
+const mongoAirFrance = mongoose.createConnection(
+  process.env.MONGO_URI_AIRFRANCE,
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+
 mongoRATP.on("connected", () => {
   console.log("Connecté à MongoDB (RATP)");
 });
 
 mongoRATP.on("error", (err) => {
   console.error("Erreur de connexion à MongoDB (RATP) :", err);
-});
-
-// Connexion à MongoDB SNCF
-const mongoSNCF = mongoose.createConnection(process.env.MONGO_URI_SNCF, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
 });
 
 mongoSNCF.on("connected", () => {
@@ -76,10 +85,19 @@ mongoSNCF.on("error", (err) => {
   console.error("Erreur de connexion à MongoDB (SNCF) :", err);
 });
 
+mongoAirFrance.on("connected", () => {
+  console.log("Connecté à MongoDB (AirFrance)");
+});
+
+mongoAirFrance.on("error", (err) => {
+  console.error("Erreur de connexion à MongoDB (AirFrance) :", err);
+});
+
 // Middleware pour injecter les connexions MongoDB dans chaque requête
 app.use((req, res, next) => {
   req.mongoRATP = mongoRATP;
   req.mongoSNCF = mongoSNCF;
+  req.mongoAirFrance = mongoAirFrance;
   next();
 });
 
