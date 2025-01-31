@@ -1,0 +1,37 @@
+name: Build
+
+on:
+  push:
+    branches: ["dev"]
+  pull_request:
+    branches: ["dev"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set environment variable for tests
+        run: echo "NODE_ENV=test" >> $GITHUB_ENV
+
+      # Désactivation des tests pour le moment
+      # - name: Run tests
+      #   run: npm test
+
+      # Désactivation du démarrage de l'application pour le moment
+      # - name: Start application
+      #   run: |
+      #     node main.js &
+      #     sleep 5
+      #     curl -f http://localhost:3000 || exit 1
