@@ -19,9 +19,6 @@ const redisClient = createClient({
 
 redisClient.connect().catch(console.error);
 
-redisClient.on("connect", () => console.log("Connecté à Redis"));
-redisClient.on("error", (err) => console.error("Erreur Redis :", err));
-
 /**
  * @swagger
  * /reservation/addToRedis:

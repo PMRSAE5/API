@@ -7,7 +7,13 @@ const cors = require("cors"); // Import du middleware CORS
 require("dotenv").config(); // Charge les variables d'environnement depuis .env;
 const { createClient } = require("redis");
 const app = express();
+const sendMessage = require("./api/kafka/kafkaProducer");
 const port = process.env.PORT || 3000;
+
+app.get("/api-docs.json", (req, res) => {
+  res.setHeader("Content-Type", "application/json");
+  res.send(swaggerDocs);
+});
 
 app.use(
   cors({
@@ -38,7 +44,7 @@ db.connect((err) => {
   if (err) {
     console.error("Erreur de connexion à la base de données MySQL:", err);
   } else {
-    console.log("Connecté à la base de données MySQL");
+    console.log("🗄️ ✅ Connecté à la base de données MySQL");
   }
 });
 
@@ -70,7 +76,7 @@ const mongoAirFrance = mongoose.createConnection(
 );
 
 mongoRATP.on("connected", () => {
-  console.log("Connecté à MongoDB (RATP)");
+  console.log("🛤️ ✅ Connecté à MongoDB (RATP)");
 });
 
 mongoRATP.on("error", (err) => {
@@ -78,7 +84,7 @@ mongoRATP.on("error", (err) => {
 });
 
 mongoSNCF.on("connected", () => {
-  console.log("Connecté à MongoDB (SNCF)");
+  console.log("🚆✅ Connecté à MongoDB (SNCF)");
 });
 
 mongoSNCF.on("error", (err) => {
@@ -86,7 +92,7 @@ mongoSNCF.on("error", (err) => {
 });
 
 mongoAirFrance.on("connected", () => {
-  console.log("Connecté à MongoDB (AirFrance)");
+  console.log("✈️ ✅ Connecté à MongoDB (AirFrance)");
 });
 
 mongoAirFrance.on("error", (err) => {
@@ -146,6 +152,13 @@ app.use("/acc", require("./api/acc/accompagnateur"));
 app.use("/ag", require("./api/ag/agent"));
 app.use("/traj", require("./api/traj/trajet")); // Ajoutez cette ligne pour inclure la nouvelle route
 app.use("/reservation", require("./api/reservation/reservation"));
+app.post("/send", async (req, res) => {
+  const { topic, message } = req.body;
+  await sendMessage(topic, message);
+  res.json({ success: true, message: `Message envoyé à ${topic}` });
+});
+
+app.listen(3001, () => console.log("🚀 API en écoute sur le port 3001"));
 
 // Ajoutez cette route pour la racine
 app.get("/", (req, res) => {
@@ -154,8 +167,8 @@ app.get("/", (req, res) => {
 
 // Démarrage du serveur après la connexion à Redis
 redisClient.on("ready", () => {
-  console.log("Redis client connected");
+  console.log("🔄 Redis client connected");
   app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
+    console.log(`🌍 Server is running on http://localhost:${port}`);
   });
 });
