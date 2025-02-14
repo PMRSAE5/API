@@ -13,7 +13,12 @@
 //   connexion.query(query, [num], callback);
 // };
 
-
+/**
+ * Ajoute un nouvel accompagnateur dans  la bdd
+ * @param {object} connexion - Connexion à la base de données
+ * @param {object} accompagnateur - Données de l'accompagnateur (nom, prénom, numéro, email)
+ * @param {function} callback -Gérer le résultat ou l'erreur
+ */
 const AddAccompagnateur = (
   connexion,
   { name_acc, surname_acc, num_acc, mail_acc }, // On récupère les données

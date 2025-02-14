@@ -1,7 +1,13 @@
 const kafka = require("../../config/kafkaConfig");
 
+/**
+ * Configuration du consommateur Kafka
+ */
 const consumer = kafka.consumer({ groupId: "api-group" });
 
+/**
+ * Exécute le consumer Kafka pour écouter les messages du topic spécifié
+ */
 const runConsumer = async () => {
   await consumer.connect();
   await consumer.subscribe({ topic: "test-topic", fromBeginning: true });

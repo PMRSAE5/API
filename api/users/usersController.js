@@ -1,22 +1,43 @@
 const bcrypt = require('bcrypt');
 
-// Rechercher un client par ID
+/**
+ * Recherche un client par son ID.
+ * @param {Object} connexion - Connexion à la base de données.
+ * @param {Object} params - ID du client à rechercher.
+ * @param {Function} callback - Gérer les résultats.
+ */
 const GetClientById = (connexion, { id }, callback) => {
   const query = "SELECT * FROM Client WHERE ID_Client = ?";
   connexion.query(query, [id], callback);
 };
 
-// Rechercher un client par email
+/**
+ * Recherche un client par son adresse mail.
+ * @param {Object} connexion - Connexion à la base de données.
+ * @param {Object} params - Le mail du client à rechercher.
+ * @param {Function} callback - Gérer les résultats.
+ */
 const GetClientByMail = (connexion, { mail }, callback) => {
   const query = "SELECT * FROM Client WHERE mail = ?";
   connexion.query(query, [mail], callback);
 };
 
+/**
+ * Hash un mot de passe en utilisant bcrypt.
+ * @param {string} password - Mot de passe à hacher.
+ * @returns {string} - Mot de passe haché.
+ */
 const hashPassword = (password) => {
   const saltRounds = 10;
   return bcrypt.hashSync(password.trim(), saltRounds);
 };
 
+/**
+ * Ajoute un nouveau client.
+ * @param {Object} connexion - Connexion à la base de données.
+ * @param {Object} data - Informations du client à ajouter.
+ * @param {Function} callback - Gérer les résultats.
+ */
 const AddClient = (connexion, data, callback) => {
   if (!data) {
     console.error("Données manquantes !");
@@ -61,6 +82,12 @@ const AddClient = (connexion, data, callback) => {
   connexion.query(query, values, callback);
 };
 
+/**
+ * Authentifie un utilisateur en vérifiant son mot de passe et mail.
+ * @param {Object} connexion - Connexion à la base de données.
+ * @param {Object} params - Contient le mail et le mot de passe.
+ * @param {Function} callback - Gérer l'authentification.
+ */
 const LoginUser = (connexion, { mail, password }, callback) => {
   const query = "SELECT * FROM Client WHERE mail = ?";
 
@@ -90,6 +117,12 @@ const LoginUser = (connexion, { mail, password }, callback) => {
   });
 };
 
+/**
+ * Met à jour les informations d'un client.
+ * @param {Object} connexion - Connexion à la base de données.
+ * @param {Object} updatedData - Les nouvelles informations du client.
+ * @param {Function} callback - Gérer la mise à jour.
+ */
 const UpdateClient = (connexion, updatedData, callback) => {
   const { ID_Client, name, surname, mail, num, handicap, contact_num } = updatedData;
 
