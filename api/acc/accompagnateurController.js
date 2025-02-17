@@ -1,18 +1,17 @@
-// const GetAccompagnateurById = (connexion, { id }, callback) => {
-//   const query = "SELECT * FROM accompagnateur WHERE ID_Accompagnateur = ?"; // On récupère l'accompagnateur par son ID
-//   connexion.query(query, [id], callback);
-// };
+const GetAccompagnateurById = (connexion, { id }, callback) => {
+  const query = "SELECT * FROM accompagnateur WHERE ID_Accompagnateur = ?"; // On récupère l'accompagnateur par son ID
+  connexion.query(query, [id], callback);
+};
 
-// const GetAccompagnateurByMail = (connexion, { mail }, callback) => {
-//   const query = "SELECT * FROM accompagnateur WHERE mail_acc = ?";
-//   connexion.query(query, [mail], callback);
-// };
+const GetAccompagnateurByMail = (connexion, { mail }, callback) => {
+  const query = "SELECT * FROM accompagnateur WHERE mail_acc = ?";
+  connexion.query(query, [mail], callback);
+};
 
-// const GetAccompagnateurByNum = (connexion, { num }, callback) => {
-//   const query = "SELECT * FROM accompagnateur WHERE num_acc = ?";
-//   connexion.query(query, [num], callback);
-// };
-
+const GetAccompagnateurByNum = (connexion, { num }, callback) => {
+  const query = "SELECT * FROM accompagnateur WHERE num_acc = ?";
+  connexion.query(query, [num], callback);
+};
 
 const AddAccompagnateur = (
   connexion,
@@ -32,7 +31,7 @@ const AddAccompagnateur = (
 
 module.exports = {
   AddAccompagnateur,
-  // GetAccompagnateurById,
-  // GetAccompagnateurByMail,
-  // GetAccompagnateurByNum,
+  GetAccompagnateurById,
+  GetAccompagnateurByMail,
+  GetAccompagnateurByNum,
 };
