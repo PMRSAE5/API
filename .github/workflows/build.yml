@@ -1,10 +1,10 @@
-name: Build
+name: Build and Deploy to Azure
 
 on:
   push:
-    branches: ["dev"]
-  pull_request:
-    branches: ["dev"]
+    branches:
+      - main
+  workflow_dispatch: # Permet de déclencher le déploiement manuellement
 
 jobs:
   build:
@@ -22,8 +22,16 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Set environment variable for tests
-        run: echo "NODE_ENV=test" >> $GITHUB_ENV
+      - name: Run tests
+        run: npm test
+
+      - name: "Deploy to Azure WebApp"
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "PMoveAPI" # Remplace par le nom exact de ton App Service Azure
+          slot-name: "production"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: .
 
       # Désactivation des tests pour le moment
       # - name: Run tests
