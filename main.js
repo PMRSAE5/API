@@ -7,7 +7,7 @@ const cors = require("cors"); // Import du middleware CORS
 require("dotenv").config(); // Charge les variables d'environnement depuis .env;
 const { createClient } = require("redis");
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 app.use(
   cors({
@@ -105,7 +105,7 @@ app.use((req, res, next) => {
 
 // Configuration Redis
 const redisClient = createClient({
-  url: `rediss://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`, // rediss pour SSL
+  url: `rediss://${process.env.REDIS_HOST}:6380`, // rediss pour SSL
   password: process.env.REDIS_PASSWORD,
 });
 

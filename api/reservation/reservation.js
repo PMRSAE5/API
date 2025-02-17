@@ -13,7 +13,7 @@ const { sendConfirmationEmail } = require("./mailler");
 
 // Connexion à Redis
 const redisClient = createClient({
-  url: `rediss://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`, // rediss pour SSL
+  url: `rediss://${process.env.REDIS_HOST}:6380`, // rediss pour SSL
   password: process.env.REDIS_PASSWORD,
 });
 redisClient.connect().catch(console.error);
