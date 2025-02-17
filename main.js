@@ -155,6 +155,7 @@ app.get("/", (req, res) => {
 // Démarrage du serveur après la connexion à Redis
 redisClient.on("ready", () => {
   console.log("Redis client connected");
+  console.log(`Port utilisé : ${port}`);
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
   });
