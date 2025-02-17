@@ -14,10 +14,7 @@ const mysqlConnexion = mysql.createPool({
 
 // Configuration Redis
 const redisClient = createClient({
-  url:
-    process.env.REDIS_HOST && process.env.REDIS_PORT
-      ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-      : undefined,
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   password: process.env.REDIS_PASSWORD,
 });
 

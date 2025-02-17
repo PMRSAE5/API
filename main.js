@@ -105,10 +105,7 @@ app.use((req, res, next) => {
 
 // Configuration Redis
 const redisClient = createClient({
-  url:
-    process.env.REDIS_HOST && process.env.REDIS_PORT
-      ? `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
-      : undefined,
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   password: process.env.REDIS_PASSWORD,
 });
 
@@ -158,7 +155,6 @@ app.get("/", (req, res) => {
 // Démarrage du serveur après la connexion à Redis
 redisClient.on("ready", () => {
   console.log("Redis client connected");
-  console.log(`Port utilisé : ${port}`);
   app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
   });
