@@ -14,7 +14,7 @@ const mysqlConnexion = mysql.createPool({
 
 // Configuration Redis
 const redisClient = createClient({
-  url: `redis://pmove-redis.redis.cache.windows.net:6380`,
+  url: `redis://pmove-redis.redis.cache.windows.net:6379`,
   password: process.env.REDIS_PASSWORD,
 });
 redisClient.connect().catch(console.error);
