@@ -105,8 +105,12 @@ app.use((req, res, next) => {
 
 // Configuration Redis
 const redisClient = createClient({
-  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+  url: `rediss://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`, // Remplace redis:// par rediss://
   password: process.env.REDIS_PASSWORD,
+  socket: {
+    tls: true,
+    rejectUnauthorized: false, // Si ton certificat SSL n'est pas valide
+  },
 });
 
 redisClient.connect().catch(console.error);
