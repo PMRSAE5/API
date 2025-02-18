@@ -3,6 +3,7 @@ const { createClient } = require("redis");
 const router = express.Router();
 const nodemailer = require("nodemailer");
 const { sendConfirmationEmail } = require("./mailler");
+const { redisClient } = require("../../config/config");
 
 /**
  * @swagger
@@ -10,23 +11,6 @@ const { sendConfirmationEmail } = require("./mailler");
  *   name: Reservation
  *   description: Reservation
  */
-
-// Connexion à Redis
-const redisClient = createClient({
-  url: `rediss://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`, // Remplace redis:// par rediss://
-  password: process.env.REDIS_PASSWORD,
-  socket: {
-    tls: true,
-    rejectUnauthorized: false, // Si ton certificat SSL n'est pas valide
-  },
-});
-
-redisClient.connect().catch(console.error);
-
-redisClient.connect().catch(console.error);
-
-redisClient.on("connect", () => console.log("Connecté à Redis"));
-redisClient.on("error", (err) => console.error("Erreur Redis :", err));
 
 /**
  * @swagger
