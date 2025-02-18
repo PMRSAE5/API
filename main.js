@@ -105,7 +105,7 @@ app.use((req, res, next) => {
 
 // Configuration Redis
 const redisClient = createClient({
-  url: `redis://pmove-redis.redis.cache.windows.net:6379`,
+  url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
   password: process.env.REDIS_PASSWORD,
 });
 
