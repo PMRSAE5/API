@@ -1,4 +1,19 @@
 const connexion = require("../../config/config");
+const bcrypt = require('bcrypt');
+
+/**
+ * Hash un mot de passe en utilisant bcrypt.
+ * @param {string} password - Mot de passe à hacher.
+ * @returns {string} - Mot de passe haché.
+ */
+const hashPassword = (password) => {
+  const saltRounds = 10;
+  return bcrypt.hashSync(password.trim(), saltRounds);
+};
+
+async function comparePassword(plainPassword, hashedPassword) {
+    return await bcrypt.compare(plainPassword, hashedPassword);
+}
 
 /**
  * Récupère les informations d'un agent par son nom
@@ -15,16 +30,6 @@ const getAgentByName = async (connexion, name) => {
         console.error('Error fetching agent by name:', error);
         throw error;
     }
-};
-
-/**
- * Compare un mot de passe fourni avec le mot de passe stocké
- * @param {string} inputPassword - Mot de passe fourni
- * @param {string} storedPassword - Mot de passe stocké
- * @returns {boolean} - Retourne true si les mots de passe correspondent, sinon false
- */
-const comparePassword = (inputPassword, storedPassword) => {
-    return inputPassword === storedPassword;
 };
 
 /**
@@ -46,8 +51,41 @@ const GetIdAgentByName = (connexion, name, callback) => {
     });
 };
 
+/**
+ * Ajoute un nouvel agent.
+ * @param {Object} connexion - Connexion à la base de données.
+ * @param {Object} data - Informations du client à ajouter.
+ * @param {Function} callback - Gérer les résultats.
+ */
+const AddAgent = (connexion, data, callback) => {
+    if (!data) {
+        console.error("Données manquantes !");
+        return callback(new Error("Les données sont manquantes ou mal formées."));
+    }
+
+    const {
+        name,
+        surname,
+        password,
+    } = data;
+
+    const hashedPassword = hashPassword(password); // Hash du mot de passe
+
+    const query = `INSERT INTO Agent (name, surname, password) VALUES (?, ?, ?)`;
+
+    const values = [
+        name,
+        surname,
+        hashedPassword,
+    ];
+
+    connexion.query(query, values, callback);
+};
+
+
 module.exports = {
     getAgentByName,
     comparePassword,
-    GetIdAgentByName
+    GetIdAgentByName,
+    AddAgent,
 };
