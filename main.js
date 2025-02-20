@@ -10,6 +10,18 @@ const app = express();
 const sendMessage = require("./api/kafka/kafkaProducer");
 const port = process.env.PORT || 3000;
 
+const checkApiToken = (req, res, next) => {
+  const token = req.headers['x-api-token']; // Le token peut être envoyé via un header personnalisé
+  console.log('Token reçu:', token); // Log pour voir quel token est reçu
+
+  if (token && token === process.env.TEAM_API_TOKEN) {
+    next(); // Token valide, continue
+  } else {
+    console.log('Token invalide ou manquant'); // Log si le token est invalide ou absent
+    res.status(403).json({ message: 'Forbidden: Invalid Token' });
+  }
+};
+
 app.get("/api-docs.json", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   res.send(swaggerDocs);
@@ -143,6 +155,8 @@ const swaggerOptions = {
   apis: ["./api/**/*.js"], // Chemin vers vos fichiers d'API
 };
 
+app.use("/api", checkApiToken);
+
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
@@ -157,6 +171,33 @@ app.post("/send", async (req, res) => {
   await sendMessage(topic, message);
   res.json({ success: true, message: `Message envoyé à ${topic}` });
 });
+
+
+/////// Nouvelle route avec token statique
+// app.use("/users", checkApiToken, (req,res,next) => {
+//   console.log("Route /users atteinte");
+//   next();
+// }, require("./api/users/users"))
+
+// app.use("/acc", checkApiToken, (req, res, next) => {
+//   console.log("Route /acc atteinte");
+//   next();
+// }, require("./api/acc/accompagnateur"));
+
+// app.use("/ag", checkApiToken, (req, res, next) => {
+//   console.log("Route /ag atteinte");
+//   next();
+// }, require("./api/ag/agent"));
+
+// app.use("/traj", checkApiToken, (req,res,next) => {
+//   console.log("Route /traj atteinte");
+//   next();
+// }, require("./api/traj/trajet"));
+
+// app.use("/reservation", checkApiToken, (req,res,next) => {
+//   console.log("Route /reservation atteinte");
+//   next();
+// }, require("./api/reservation/reservation"));
 
 app.listen(3001, () => console.log("🚀 API en écoute sur le port 3001"));
 
