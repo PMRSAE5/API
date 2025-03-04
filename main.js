@@ -7,7 +7,7 @@ const cors = require("cors"); // Import du middleware CORS
 require("dotenv").config(); // Charge les variables d'environnement depuis .env;
 const { createClient } = require("redis");
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 app.use(
   cors({
@@ -154,7 +154,7 @@ app.get("/", (req, res) => {
 // Démarrage du serveur après la connexion à Redis
 redisClient.on("ready", () => {
   console.log("Redis client connected");
-  app.listen(3000, "0.0.0.0", () => {
-    console.log(`Server is running on http://localhost:${port}`);
+  app.listen(port, "0.0.0.0", () => {
+    console.log(`Server is running on http://0.0.0.0:${port}`);
   });
 });
