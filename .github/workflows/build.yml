@@ -29,8 +29,8 @@ jobs:
           aws configure set region $AWS_REGION
 
           $(aws ecr get-login --no-include-email)
-          docker tag api-api <ton-id-ecr>.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
-          docker push <ton-id-ecr>.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
+          docker tag api-api 405894863828.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
+          docker push 405894863828.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
 
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@master
@@ -39,7 +39,7 @@ jobs:
           username: ec2-user
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           script: |
-            docker pull <ton-id-ecr>.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
+            docker pull 405894863828.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
             docker stop api-api-1 || true
             docker rm api-api-1 || true
-            docker run -d -p 3000:3000 --name api-api-1 <ton-id-ecr>.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
+            docker run -d -p 3000:3000 --name api-api-1 405894863828.dkr.ecr.$AWS_REGION.amazonaws.com/api-api
