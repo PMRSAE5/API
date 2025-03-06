@@ -51,6 +51,12 @@ services:
     command: ["redis-server", "--requirepass", "kaka"]
     networks:
       - pmove-network
+    environment:
+      - REDIS_PASSWORD=kaka
+      - REDIS_PORT=6379
+  command: ["redis-server", "--requirepass", "kaka"]
+  networks:
+    - pmove-network
 
 networks:
   pmove-network:
