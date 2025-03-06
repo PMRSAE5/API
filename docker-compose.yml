@@ -22,6 +22,7 @@ services:
       - redis
     networks:
       - pmove-network
+    command: ["node", "main.js"]
 
   mysql:
     image: mysql:8.0
@@ -48,15 +49,12 @@ services:
     image: redis:latest
     ports:
       - "6379:6379"
-    command: ["redis-server", "--requirepass", "kaka"]
-    networks:
-      - pmove-network
     environment:
       - REDIS_PASSWORD=kaka
       - REDIS_PORT=6379
-  command: ["redis-server", "--requirepass", "kaka"]
-  networks:
-    - pmove-network
+    command: ["redis-server", "--requirepass", "kaka"]
+    networks:
+      - pmove-network
 
 networks:
   pmove-network:
