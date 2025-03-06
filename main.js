@@ -148,6 +148,7 @@ app.use("/reservation", require("./api/reservation/reservation"));
 
 // Ajoutez cette route pour la racine
 app.get("/", (req, res) => {
+  console.log("Poto ca marche mais pas trop");
   res.send("Hello World!");
 });
 
