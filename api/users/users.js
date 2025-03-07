@@ -60,9 +60,10 @@ router.get("/userId/:id", (req, res) => {
   const { id } = req.params;
   UsersController.GetClientById(req.connexion, { id }, (err, rows) => {
     if (err) {
-      res
-        .status(500)
-        .json({ error: "Erreur lors de la récupération des données" });
+      res.status(500).json({
+        error: "Erreur lors de la récupération des données",
+        errormessage: err.message,
+      });
       return;
     }
     res.status(200).json(rows);
@@ -98,7 +99,11 @@ router.get("/userMail/:mail", (req, res) => {
     if (err) {
       res
         .status(500)
-        .json({ error: "Erreur lors de la récupération des données" });
+        .json({
+          error: "Erreur lors de la récupération des données",
+          errormessage: err.message,
+        });
+
       return;
     }
     res.status(200).json(rows);
@@ -145,7 +150,10 @@ router.post("/userAdd", (req, res) => {
       console.error("Erreur lors de l'ajout :", err);
       return res
         .status(500)
-        .json({ error: "Erreur lors de l'ajout du client" });
+        .json({
+          error: "Erreur lors de l'ajout du client",
+          errormessage: err.message,
+        });
     }
     res.status(201).json({ message: "Client ajouté avec succès !" });
   });
