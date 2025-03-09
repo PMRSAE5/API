@@ -8,12 +8,12 @@ const sendConfirmationEmail = async ({ name, email, subject, message }) => {
     secure: false,
     auth: {
       user: "pmove213@gmail.com", // Remplace par ton email Gmail
-      pass: "edmajzchjelwyjex",
+      pass: "qlmtrkabbqhumzir",
     },
   });
 
   const mailOptions = {
-    from: `"PMove" <tonEmail@gmail.com>`, // Expéditeur
+    from: `"PMove" <pmove213@gmail.com>`, // Expéditeur
     to: email, // Email cible (du client)
     subject: subject || "Confirmation de réservation", // Sujet
     html: `

@@ -75,7 +75,7 @@ router.post("/addToRedis", async (req, res) => {
   try {
     const billetKey = `billet:${billet.num_reservation}`;
     await redisClient.set(billetKey, JSON.stringify(billet));
-    console.log("Billet enregistré dans Redis :", billetKey);
+    console.log("✅ Billet enregistré dans Redis :", billetKey);
 
     // Envoi de l'email
     const subject = "Confirmation de réservation";
@@ -84,15 +84,32 @@ router.post("/addToRedis", async (req, res) => {
       Numéro de réservation : ${billet.num_reservation}.
     `;
 
-    await sendConfirmationEmail({ name: billet.name, email, subject, message });
-    console.log("E-mail de confirmation envoyé à :", email);
+    try {
+      await sendConfirmationEmail({
+        name: billet.name,
+        email,
+        subject,
+        message,
+      });
+      console.log("📧 E-mail de confirmation envoyé à :", email);
+    } catch (emailError) {
+      console.error(
+        "⚠️ Erreur lors de l'envoi de l'email :",
+        emailError.message
+      );
+      return res.json({
+        success: true,
+        message:
+          "Billet ajouté à Redis mais erreur lors de l'envoi de l'email.",
+      });
+    }
 
     res.json({
       success: true,
       message: "Billet ajouté à Redis et e-mail envoyé.",
     });
   } catch (error) {
-    console.error("Erreur dans la route /addToRedis :", error);
+    console.error("🚨 Erreur dans la route /addToRedis :", error);
     res.status(500).json({
       success: false,
       message: "Erreur lors du traitement de la réservation.",
