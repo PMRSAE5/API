@@ -39,9 +39,8 @@ const hashPassword = (password) => {
  * @param {Function} callback - Gérer les résultats.
  */
 const AddClient = (connexion, data, callback) => {
-  if (!data) {
-    console.error("Données manquantes !");
-    return callback(new Error("Les données sont manquantes ou mal formées."));
+  if (!data || !data.mail || !data.password) {
+    return callback(new Error("Les champs 'mail' et 'password' sont requis."));
   }
 
   const {

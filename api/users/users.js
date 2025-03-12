@@ -139,17 +139,15 @@ router.get("/userMail/:mail", (req, res) => {
  */
 router.post("/userAdd", (req, res) => {
   console.log("Requête reçue :", req.body);
-
   UsersController.AddClient(req.connexion, req.body, (err, result) => {
     if (err) {
       console.error("Erreur lors de l'ajout :", err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de l'ajout du client" });
+      return res.status(500).json({ error: "Erreur lors de l'ajout du client" });
     }
     res.status(201).json({ message: "Client ajouté avec succès !" });
   });
 });
+
 
 router.get("/test", (req, res) => {
   res.status(200).json({ message: "API fonctionnelle" });
@@ -262,6 +260,10 @@ router.post("/userLog", async (req, res) => {
   UsersController.LoginUser(req.connexion, { mail, password }, async (err, user) => {
     if (err) {
       console.error("Erreur SQL :", err);
+      // Si l'erreur est "Utilisateur non trouvé." ou "Mot de passe incorrect.", renvoyer 401
+      if (err.message === "Utilisateur non trouvé." || err.message === "Mot de passe incorrect.") {
+        return res.status(401).json({ error: "Utilisateur non trouvé ou mot de passe incorrect." });
+      }
       return res.status(500).json({ error: "Erreur interne lors de la connexion." });
     }
 
