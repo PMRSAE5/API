@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "![Build Status](https://github.com/PMRSAE5/API/actions/workflows/build.yml/badge.svg)\r ![NPM Version](https://img.shields.io/npm/v/node)\r ![Coverage](https://codecov.io/gh/PMRSAE5/API/branch/main/graph/badge.svg)",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "connect-redis": "^8.0.1",
     "cors": "^2.8.5",

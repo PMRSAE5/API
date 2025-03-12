@@ -462,6 +462,38 @@ router.get("/getByPoint", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /reservation/getById:
+ *   get:
+ *     summary: Récupère une réservation par son ID
+ *     tags: [Reservation]
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID de la réservation à récupérer
+ *     responses:
+ *       200:
+ *         description: Réservation trouvée
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 reservation:
+ *                   type: object
+ *       400:
+ *         description: Paramètre ID manquant
+ *       404:
+ *         description: Aucune réservation trouvée
+ *       500:
+ *         description: Erreur serveur
+ */
 router.get("/getById", async (req, res) => {
   const { id } = req.query;
 

@@ -2,9 +2,9 @@ name: Build
 
 on:
   push:
-    branches: ["dev"]
+    branches: ["patch", "dev"]
   pull_request:
-    branches: ["dev"]
+    branches: ["patch", "dev"]
 
 jobs:
   build:
@@ -25,13 +25,10 @@ jobs:
       - name: Set environment variable for tests
         run: echo "NODE_ENV=test" >> $GITHUB_ENV
 
-      # Désactivation des tests pour le moment
-      # - name: Run tests
-      #   run: npm test
+      - name: Run tests and generate coverage
+        run: npm test -- --coverage
 
-      # Désactivation du démarrage de l'application pour le moment
-      # - name: Start application
-      #   run: |
-      #     node main.js &
-      #     sleep 5
-      #     curl -f http://localhost:3000 || exit 1
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov-report/lcov-report.json  # Point vers le bon fichier de couverture

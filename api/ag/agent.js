@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { getAgentByName, comparePassword, GetIdAgentByName } = require('./agentController');
+const { getAgentByName, comparePassword, GetIdAgentByName, AddAgent } = require('./agentController');
 
 /**
  * @swagger
@@ -66,32 +66,34 @@ router.get("/", (req, res) => {
  *         description: Internal server error
  */
 router.post("/login", async (req, res) => {
-    console.log("Login request received:", req.body);
-    const { name, password } = req.body; // On récupère le nom et le mot de passe de l'agent
+    const { name, password } = req.body;
 
     try {
-        // On vérifie si l'agent existe
-        const rows = await getAgentByName(req.connexion, name);
-        if (rows.length === 0) {
-            console.log("Agent not found");
-            return res.status(401).json({ message: "Nom ou mot de passe invalide" }); // On renvoie une erreur si l'agent n'existe pas
+        // Vérifie si la connexion est bien définie
+        if (!req.connexion) {
+            return res.status(500).json({ message: "Erreur interne du serveur" });
         }
 
-        const agent = rows[0];
-        console.log("Agent found:", agent);
-
-        const isPasswordValid = comparePassword(password, agent.password); // On compare le mot de passe fourni avec le mot de passe de l'agent
-        if (!isPasswordValid) { // Si le mot de passe est invalide
-            console.log("Invalid password");
+        // Récupération de l'agent par son nom
+        const rows = await getAgentByName(req.connexion, name);
+        if (rows.length === 0) {
             return res.status(401).json({ message: "Nom ou mot de passe invalide" });
         }
 
-        res.status(200).json({ message: "Login successful" });
+        const agent = rows[0];
+
+        // Vérification du mot de passe (avec bcrypt)
+        const isPasswordValid = await comparePassword(password, agent.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: "Nom ou mot de passe invalide" });
+        }
+
+        res.status(200).json({ message: "Login successful", agent });
     } catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ message: "Erreur interne du serveur" });
     }
 });
+
 
 /**
  * @swagger
@@ -127,4 +129,17 @@ router.get("/agentId/:name", (req, res) => {
     });
 });
 
-module.exports = router;
+router.post("/agentAdd", (req, res) => {
+    console.log("Requête reçue :", req.body);
+
+    AddAgent(req.connexion, req.body, (err, result) => {
+        if (err) {
+      console.error("Erreur lors de l'ajout :", err);
+      return res
+        .status(500)
+        .json({ error: "Erreur lors de l'ajout du client" });
+    }
+    res.status(201).json({ message: "Agent ajouté avec succès !" });  
+    })});
+
+    module.exports = router;
