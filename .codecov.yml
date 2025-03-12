@@ -1,11 +1,13 @@
 coverage:
   status:
-    project:
-      default:
-        target: 90%  # Si tu veux avoir une couverture minimale cible de 90%
-    patch:
-      target: auto  # Détermine automatiquement la couverture cible sur la branche patch
-    dev:
-      target: auto  # Idem pour la branche dev
-    main:
-      target: ignore  # Ne pas uploader les résultats de coverage sur main
+    project: true  # Active le suivi de couverture
+    target: 90%  # Coverage cible à atteindre
+    threshold: 5%  # Si la couverture chute de 5%, déclenche un échec
+
+  # Exclure certaines branches si nécessaire
+  ignore:
+    - main  # Ignore main, si tu veux vraiment l'exclure
+
+  branches:
+    - patch  # Surveille la branche patch
+    - dev    # Surveille la branche dev
