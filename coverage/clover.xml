@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1741805882895" clover="3.2.0">
-  <project timestamp="1741805882895" name="All files">
-    <metrics statements="154" coveredstatements="59" conditionals="65" coveredconditionals="6" methods="28" coveredmethods="8" elements="247" coveredelements="73" complexity="0" loc="154" ncloc="154" packages="2" files="3" classes="3"/>
+<coverage generated="1741806764643" clover="3.2.0">
+  <project timestamp="1741806764643" name="All files">
+    <metrics statements="168" coveredstatements="71" conditionals="73" coveredconditionals="13" methods="31" coveredmethods="10" elements="272" coveredelements="94" complexity="0" loc="168" ncloc="168" packages="3" files="4" classes="4"/>
+    <package name="api.acc">
+      <metrics statements="14" coveredstatements="12" conditionals="8" coveredconditionals="7" methods="3" coveredmethods="2"/>
+      <file name="accompagnateur.js" path="C:\Users\chris\Documents\COURS\SAE5\API\API\api\acc\accompagnateur.js">
+        <metrics statements="14" coveredstatements="12" conditionals="8" coveredconditionals="7" methods="3" coveredmethods="2"/>
+        <line num="1" count="1" type="stmt"/>
+        <line num="2" count="1" type="stmt"/>
+        <line num="3" count="1" type="stmt"/>
+        <line num="30" count="1" type="stmt"/>
+        <line num="32" count="0" type="stmt"/>
+        <line num="71" count="1" type="stmt"/>
+        <line num="72" count="2" type="stmt"/>
+        <line num="75" count="2" type="cond" truecount="6" falsecount="0"/>
+        <line num="76" count="1" type="stmt"/>
+        <line num="79" count="1" type="stmt"/>
+        <line num="83" count="1" type="cond" truecount="1" falsecount="1"/>
+        <line num="84" count="0" type="stmt"/>
+        <line num="86" count="1" type="stmt"/>
+        <line num="94" count="1" type="stmt"/>
+      </file>
+    </package>
     <package name="api.users">
       <metrics statements="144" coveredstatements="50" conditionals="65" coveredconditionals="6" methods="27" coveredmethods="8"/>
       <file name="users.js" path="C:\Users\chris\Documents\COURS\SAE5\API\API\api\users\users.js">

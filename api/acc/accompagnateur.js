@@ -69,23 +69,24 @@ router.get("/", (req, res) => {
  *         description: Erreur lors de l'insertion des données
  */
 router.post("/accAdd", (req, res) => {
-  const { name_acc, surname_acc, num_acc, mail_acc } = req.body; // Récupération des données
-  AddAccompagnateur( // On appelle la méthode AddAccompagnateur dans AccompagnateurController
+  const { name_acc, surname_acc, num_acc, mail_acc } = req.body;
+
+  // Vérification que toutes les données sont présentes
+  if (!name_acc || !surname_acc || !num_acc || !mail_acc) {
+    return res.status(500).json({ error: "Erreur lors de l'insertion des données" });
+  }
+
+  AddAccompagnateur(
     req.connexion,
-    { name_acc, surname_acc, num_acc, mail_acc }, // On fournit les données à la méthode
+    { name_acc, surname_acc, num_acc, mail_acc },
     (err, result) => {
-      if (err) { // En cas d'erreur
-        res
-          .status(500)
-          .json({ error: "Erreur lors de l'insertion des données" });
-        return;
+      if (err) {
+        return res.status(500).json({ error: "Erreur lors de l'insertion des données" });
       }
-      res // En cas de succès
-        .status(201)
-        .json({
-          message: "Accompagnateur ajouté avec succès",
-          id: result.insertId,
-        });
+      res.status(201).json({
+        message: "Accompagnateur ajouté avec succès",
+        id: result.insertId,
+      });
     }
   );
 });

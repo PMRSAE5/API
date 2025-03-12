@@ -19,20 +19,22 @@
  * @param {object} accompagnateur - Données de l'accompagnateur (nom, prénom, numéro, email)
  * @param {function} callback -Gérer le résultat ou l'erreur
  */
-const AddAccompagnateur = (
-  connexion,
-  { name_acc, surname_acc, num_acc, mail_acc }, // On récupère les données
-  callback
-) => {
-  // On utilise une requête SQL pour insérer un nouvel accompagnateur
+// accompagnateurController.js
+
+const AddAccompagnateur = (connexion, { name_acc, surname_acc, num_acc, mail_acc }, callback) => {
+  console.log('Ajout d\'un accompagnateur:', { name_acc, surname_acc, num_acc, mail_acc });
+
   const query = `
          INSERT INTO Accompagnateur (name_acc, surname_acc, num_acc, mail_acc) 
          VALUES (?, ?, ?, ?)
      `;
-  // On fournit les valeurs
   const values = [name_acc, surname_acc, num_acc, mail_acc];
 
   connexion.query(query, values, callback);
+};
+
+module.exports = {
+  AddAccompagnateur,
 };
 
 module.exports = {
