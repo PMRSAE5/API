@@ -1,0 +1,11 @@
+coverage:
+  status:
+    project:
+      default:
+        target: 90%  # Si tu veux avoir une couverture minimale cible de 90%
+    patch:
+      target: auto  # Détermine automatiquement la couverture cible sur la branche patch
+    dev:
+      target: auto  # Idem pour la branche dev
+    main:
+      target: ignore  # Ne pas uploader les résultats de coverage sur main
