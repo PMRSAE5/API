@@ -23,6 +23,7 @@ jest.mock('mysql2', () => ({
 }));
 
 // Simuler un modèle Mongoose
+// t
 jest.mock('mongoose', () => ({
   model: jest.fn().mockReturnValue({
     findById: jest.fn().mockResolvedValue({ name: 'John Doe', email: 'john@example.com' }),
