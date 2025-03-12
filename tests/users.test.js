@@ -1,8 +1,35 @@
-const request = require('supertest');  // Pour tester les requêtes HTTP
+const request = require('supertest');
 const express = require('express');
 const usersRouter = require('../api/users/users'); // Importation du routeur des utilisateurs
 const UsersController = require('../api/users/usersController');  // Le contrôleur
 jest.mock('../api/users/usersController');  // Mock du contrôleur
+
+// Mocks supplémentaires pour simuler les interactions avec la base de données
+jest.mock('redis', () => ({
+    createClient: jest.fn().mockReturnValue({
+      set: jest.fn().mockResolvedValue('OK'),
+      get: jest.fn().mockResolvedValue('some value'),
+      del: jest.fn().mockResolvedValue('OK'),
+      connect: jest.fn().mockResolvedValue(),  // Simule la connexion
+      on: jest.fn(),  // Simule l'écoute des événements (comme "error")
+    }),
+  }));
+
+jest.mock('mysql2', () => ({
+  createConnection: jest.fn().mockReturnValue({
+    query: jest.fn((sql, params, callback) => callback(null, [])),  // Mock de la requête MySQL
+    end: jest.fn(),
+  }),
+}));
+
+// Simuler un modèle Mongoose
+jest.mock('mongoose', () => ({
+  model: jest.fn().mockReturnValue({
+    findById: jest.fn().mockResolvedValue({ name: 'John Doe', email: 'john@example.com' }),
+    save: jest.fn().mockResolvedValue(true),
+    updateOne: jest.fn().mockResolvedValue({ modifiedCount: 1 }),
+  }),
+}));
 
 const app = express();
 app.use(express.json());
