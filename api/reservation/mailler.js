@@ -10,6 +10,9 @@ const sendConfirmationEmail = async ({ name, email, subject, message }) => {
       user: "pmove213@gmail.com", // Remplace par ton email Gmail
       pass: "edmajzchjelwyjex",
     },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 
   const mailOptions = {
