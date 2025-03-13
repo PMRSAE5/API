@@ -1,30 +1,26 @@
 const nodemailer = require("nodemailer");
 
-// Fonction pour envoyer l'email
-const sendConfirmationEmail = async ({ name, email, subject, message }) => {
-  const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
-    auth: {
-      user: "pmove213@gmail.com", // Remplace par ton email Gmail
-      pass: "edmajzchjelwyjex",
-    },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
+const transporter = nodemailer.createTransport({
+  host: "email-smtp.eu-north-1.amazonaws.com", // Remplace par le serveur SMTP de ta région AWS SES
+  port: 587, // 465 pour SSL, mais 587 recommandé avec STARTTLS
+  secure: false, // false = STARTTLS, true = SSL
+  auth: {
+    user: "AKIAV5AJYDPKEDV33AAX", // Mets ici ton SMTP Username SES
+    pass: "BCsPFF3ByRUqy0tcK4Xt2xPpEPoEMJ208fHfAWhNdlf9", // Mets ici ton SMTP Password SES
+  },
+});
 
+const sendConfirmationEmail = async ({ name, email, subject, message }) => {
   const mailOptions = {
-    from: `"PMove" <tonEmail@gmail.com>`, // Expéditeur
-    to: email, // Email cible (du client)
-    subject: subject || "Confirmation de réservation", // Sujet
+    from: `"PMove" <pmove213@gmail.com>`, // Utilise une adresse vérifiée sur AWS SES
+    to: email,
+    subject: subject || "Confirmation de réservation",
     html: `
       <h1>Confirmation de réservation</h1>
       <p>Bonjour ${name || "Client"},</p>
       <p>${message}</p>
       <p>Merci de choisir PMove !</p>
-    `, // Contenu du mail en HTML
+    `,
   };
 
   try {
