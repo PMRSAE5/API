@@ -1,0 +1,13 @@
+coverage:
+  status:
+    project: true  # Active le suivi de couverture
+    target: 90%  # Coverage cible à atteindre
+    threshold: 5%  # Si la couverture chute de 5%, déclenche un échec
+
+  # Exclure certaines branches si nécessaire
+  ignore:
+    - main  # Ignore main, si tu veux vraiment l'exclure
+
+  branches:
+    - patch  # Surveille la branche patch
+    - dev    # Surveille la branche dev

@@ -3,8 +3,8 @@ name: Build
 on:
   push:
     branches:
-      - main
-  workflow_dispatch: # Permet de déclencher le déploiement manuellement
+      - main  # La branche principale
+  workflow_dispatch:  # Permet de déclencher le déploiement manuellement
 
 jobs:
   deploy:
@@ -13,3 +13,22 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16" 
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set environment variable for tests
+        run: echo "NODE_ENV=test" >> $GITHUB_ENV
+
+      - name: Run tests and generate coverage
+        run: npm test -- --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/lcov-report/index.html
