@@ -1,12 +1,12 @@
 // Rechercher un client par ID
 const GetClientById = (connexion, { id }, callback) => {
-  const query = "SELECT * FROM Client WHERE ID_Client = ?";
+  const query = "SELECT * FROM client WHERE ID_Client = ?";
   connexion.query(query, [id], callback);
 };
 
 // Rechercher un client par email
 const GetClientByMail = (connexion, { mail }, callback) => {
-  const query = "SELECT * FROM Client WHERE mail = ?";
+  const query = "SELECT * FROM client WHERE mail = ?";
   connexion.query(query, [mail], callback);
 };
 
@@ -31,7 +31,7 @@ const AddClient = (connexion, data, callback) => {
   } = data;
 
   const query = `
-    INSERT INTO Client (name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note)
+    INSERT INTO client (name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const values = [
@@ -66,7 +66,7 @@ const UpdateClient = (connexion, updatedData, callback) => {
   }
 
   const query = `
-    UPDATE Client
+    UPDATE client
     SET
       name = ?,
       surname = ?,
