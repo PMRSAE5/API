@@ -8,7 +8,10 @@ const cors = require("cors"); // Import du middleware CORS
 require("dotenv").config(); // Charge les variables d'environnement depuis .env
 const { createClient } = require("redis");
 const sendMessage = require("./api/kafka/kafkaProducer");
+// -- Ajout Kafka-- //
+const kafkaConsumer = require("./api/kafka/kafkaConsumer"); // Import du consommateur Kafka
 
+// Initialisation de l'application Express.js
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -151,6 +154,39 @@ app.post("/send", async (req, res) => {
   const { topic, message } = req.body;
   await sendMessage(topic, message);
   res.json({ success: true, message: `Message envoyé à ${topic}` });
+});
+
+// Route de consommation Kafka // -- Ajout -- //
+
+// Consommation des topics 'client', 'agent' et 'notifications' tous les instances en une seule fois (multi-thread)
+kafkaConsumer("client");
+kafkaConsumer("agent");
+kafkaConsumer("notifications");
+
+// Clients : topic 'client'
+app.post("/api/client", async (req, res) => {
+  const { name, surname, num, mail, handicap, civilite, birth, password, contact_mail, contact_num, note } = req.body;
+  if (!name || !surname || !num) return res.status(400).json({ error: 'Informations client incomplètes.' });
+  const message = `${name};${surname};${num};${mail};${handicap};${civilite};${birth};${password};${contact_mail};${contact_num};${note}`;
+  await sendMessage('client', message);
+  res.json({ success: true, message: 'Client envoyé via Kafka.' });
+});
+
+// Agents : topic 'agent'
+app.post("/api/agent", async (req, res) => {
+  const { id, name, surname, password } = req.body;
+  if (!id || !name || !surname || !password) return res.status(400).json({ error: 'Informations agent incomplètes.' });
+  const message = `${id};${name};${surname};${password}`;
+  await sendMessage('agent', message);
+  res.json({ success: true, message: 'Agent envoyé via Kafka.' });
+});
+
+// Notifications : topic 'notifications'
+app.post("/api/notification", async (req, res) => {
+  const { message } = req.body;
+  if (!message) return res.status(400).json({ error: 'Message vide.' });
+  await sendMessage('notifications', message);
+  res.json({ success: true, message: 'Notification envoyée via Kafka.' });
 });
 
 // Route racine
