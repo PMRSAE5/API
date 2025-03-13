@@ -139,17 +139,15 @@ router.get("/userMail/:mail", (req, res) => {
  */
 router.post("/userAdd", (req, res) => {
   console.log("Requête reçue :", req.body);
-
   UsersController.AddClient(req.connexion, req.body, (err, result) => {
     if (err) {
       console.error("Erreur lors de l'ajout :", err);
-      return res
-        .status(500)
-        .json({ error: "Erreur lors de l'ajout du client" });
+      return res.status(500).json({ error: "Erreur lors de l'ajout du client" });
     }
     res.status(201).json({ message: "Client ajouté avec succès !" });
   });
 });
+
 
 router.get("/test", (req, res) => {
   res.status(200).json({ message: "API fonctionnelle" });
@@ -255,57 +253,43 @@ router.put("/update", (req, res) => {
  *       500:
  *         description: Internal server error
  */
-router.post("/userLog", (req, res) => {
+router.post("/userLog", async (req, res) => {
   const { mail, password } = req.body;
   console.log("Requête de connexion reçue avec :", { mail, password });
 
-  UsersController.LoginUser(
-    req.connexion,
-    { mail, password },
-    async (err, results) => {
-      if (err) {
-        console.error("Erreur SQL :", err);
-        return res
-          .status(500)
-          .json({ error: "Erreur interne lors de la connexion." });
+  UsersController.LoginUser(req.connexion, { mail, password }, async (err, user) => {
+    if (err) {
+      console.error("Erreur SQL :", err);
+      // Si l'erreur est "Utilisateur non trouvé." ou "Mot de passe incorrect.", renvoyer 401
+      if (err.message === "Utilisateur non trouvé." || err.message === "Mot de passe incorrect.") {
+        return res.status(401).json({ error: "Utilisateur non trouvé ou mot de passe incorrect." });
       }
+      return res.status(500).json({ error: "Erreur interne lors de la connexion." });
+    }
 
-      if (results.length === 0) {
-        return res.status(401).json({ error: "Utilisateur non trouvé." });
-      }
+    if (!user) {
+      return res.status(401).json({ error: "Utilisateur non trouvé ou mot de passe incorrect." });
+    }
 
-      const user = results[0];
-      if (!user) {
-        return res
-          .status(500)
-          .json({ error: "Données utilisateur non valides." });
-      }
+    // Générer un token unique
+    const token = uuidv4();
 
-      // Générer un token
-      const token = uuidv4();
-
-      // Stocker le token et l'ID dans Redis
-      try {
-        await redisClient.set(
-          `user:${token}`,
-          JSON.stringify({ userId: user.ID_Client, mail: user.mail }),
-          {
-            EX: 3600, // Expire après 1 heure
-          }
-        );
-      } catch (redisErr) {
-        console.error("Erreur lors de l'enregistrement dans Redis :", redisErr);
-        return res
-          .status(500)
-          .json({ error: "Erreur interne lors de la connexion." });
-      }
+    try {
+      // Stocker le token et l'ID utilisateur dans Redis
+      await redisClient.set(
+        `user:${token}`,
+        JSON.stringify({ userId: user.ID_Client, mail: user.mail }),
+        { EX: 3600 } // Expire après 1 heure
+      );
 
       console.log("Utilisateur trouvé :", user);
-      return res
-        .status(200)
-        .json({ message: "Connexion réussie", user, token });
+      return res.status(200).json({ message: "Connexion réussie", user, token });
+
+    } catch (redisErr) {
+      console.error("Erreur lors de l'enregistrement dans Redis :", redisErr);
+      return res.status(500).json({ error: "Erreur interne lors de la connexion." });
     }
-  );
+  });
 });
 
 /**

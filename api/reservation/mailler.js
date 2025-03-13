@@ -1,6 +1,9 @@
 const nodemailer = require("nodemailer");
 
-// Fonction pour envoyer l'email
+/**
+ * Envoie un e-mail de confirmation de réservation
+ * @param {object} data - Contient le nom, email, sujet et message
+ */
 const sendConfirmationEmail = async ({ name, email, subject, message }) => {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
